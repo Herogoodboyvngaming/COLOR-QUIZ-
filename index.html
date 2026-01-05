@@ -4,292 +4,452 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRÒ CHƠI ĐỐ MÀU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=POPPINS:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>TRÒ CHƠI ĐỐ MÀU</h1>
-        <p>CHÚC CÁC BẠN CHƠI VUI VẺ, CÓ LỖI VUI LÒNG KÉO XUỐNG DƯỚI CHÂN TRANG BẤM NÚT BÁO CÁO LỖI</p>
-    </header>
-
-    <main>
-        <section id="home">
-            <div class="WELCOME-CARD">
-                <h2>CHÀO MỪNG ĐẾN VỚI TRÒ CHƠI ĐỐ MÀU VIRAL</h2>
-                <p>PLAYER 1: NGƯỜI ĐẶT MÀU BÍ MẬT<br>PLAYER 2: NGƯỜI ĐOÁN MÀU BẰNG NÚT MÀU SẮC</p>
-                <button class="BIG-BTN START-BTN" onclick="CONFIRMSTART()">BẮT ĐẦU CHƠI</button>
-            </div>
-        </section>
-
-        <section id="game">
-            <div id="BLACKSCREEN" class="BLACK-SCREEN">
-                <p id="WAITINGTEXT">VUI LÒNG ĐỢI PHÍA BÊN KIA ĐẶT MÀU XONG...</p>
-                <div id="TIMER" class="TIMER">05:00</div>
-            </div>
-
-            <div id="SCOREBOARD" class="SCOREBOARD">
-                <h2>BẢNG ĐIỂM</h2>
-                <p>ĐIỂM PLAYER 1: <span id="SCORE1">0</span></p>
-                <p>ĐIỂM PLAYER 2: <span id="SCORE2">0</span></p>
-                <p>LẦN ĐOÁN: <span id="ATTEMPTS">0</span>/3</p>
-            </div>
-
-            <div id="PLAYER1" class="PLAYER-PANEL">
-                <h2>PLAYER 1 - ĐẶT MÀU BÍ MẬT</h2>
-                <p>CHỌN MÀU BÍ MẬT RỒI BẤM ĐẶT MÀU</p>
-                <select id="COLORSELECT">
-                    <option value="">CHỌN MÀU</option>
-                    <option value="ĐỎ">ĐỎ</option>
-                    <option value="XANH DƯƠNG">XANH DƯƠNG</option>
-                    <option value="XANH LÁ">XANH LÁ</option>
-                    <option value="VÀNG">VÀNG</option>
-                    <option value="ĐEN">ĐEN</option>
-                    <option value="TRẮNG">TRẮNG</option>
-                    <option value="TÍM">TÍM</option>
-                    <option value="CAM">CAM</option>
-                    <option value="HỒNG">HỒNG</option>
-                    <option value="NÂU">NÂU</option>
-                </select>
-                <button class="ACTION-BTN" onclick="PLAYERSETCOLOR()">ĐẶT MÀU</button>
-            </div>
-
-            <div id="PLAYER2" class="PLAYER-PANEL">
-                <h2>PLAYER 2 - ĐOÁN MÀU</h2>
-                <p id="READYTEXT">BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?</p>
-                <div id="COLORBUTTONS" class="COLOR-BUTTONS"></div>
-                <p id="FEEDBACK" class="FEEDBACK"></p>
-                <button id="PLAYAGAINBTN" class="CONTROL-BTN RESTART" style="display:none;" onclick="RESTARTROUNDCONFIRM()">CHƠI LẠI VÒNG NÀY</button>
-            </div>
-
-            <div id="CONTROLS">
-                <button class="CONTROL-BTN RESTART" onclick="RESTARTGAMECONFIRM()">RESTART TOÀN BỘ</button>
-                <button class="CONTROL-BTN FORFEIT" onclick="FORFEITCONFIRM()">TỪ BỎ (-10 ĐIỂM)</button>
-                <button class="CONTROL-BTN RESET" onclick="RESETSCORESCONFIRM()">RESET ĐIỂM</button>
-                <button class="CONTROL-BTN HOME" onclick="BACKTOHOME()">TRỞ VỀ TRANG CHỦ</button>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>MADE IN VN 🇻🇳</p>
-        <p>MADE BY: NGUYỄN CHÍ DỰ ♥️🇻🇳</p>
-        <p>GMAIL HỖ TRỢ: HEROGOODBOYMC2024@GMAIL.COM</p>
-        <button class="REPORT-BTN" onclick="OPENREPORTMODAL()">BÁO CÁO LỖI</button>
-    </footer>
-
-    <div id="REPORTMODAL" class="MODAL">
-        <div class="MODAL-CONTENT">
-            <span class="CLOSE" onclick="CLOSEREPORTMODAL()">×</span>
-            <h2>BÁO CÁO LỖI</h2>
-            <label>ĐIỀN THÔNG TIN CỦA BẠN (BẮT BUỘC)</label>
-            <input type="text" id="INFO">
-            <label>GMAIL CỦA BẠN (BẮT BUỘC)</label>
-            <input type="email" id="GMAIL">
-            <label>ĐIỀN TIN NHẮN CỦA BẠN (BẮT BUỘC)</label>
-            <textarea id="MESSAGE"></textarea>
-            <button class="SUBMIT-REPORT" onclick="SUBMITREPORT()">GỬI BÁO CÁO</button>
-        </div>
-    </div>
-
-    <audio id="CLICK" src="https://www.soundjay.com/buttons/button-3.mp3"></audio>
-    <audio id="CORRECT" src="https://www.orangefreesounds.com/wp-content/uploads/2014/10/Correct-answer.mp3"></audio>
-    <audio id="WRONG" src="https://www.orangefreesounds.com/wp-content/uploads/2016/11/Wrong-answer-sound-effect.mp3"></audio>
-    <audio id="TIMEREND" src="https://www.soundjay.com/buttons/button-10.mp3"></audio>
-
     <script>
-        LET SELECTEDCOLOR = '';
-        LET SCORE1 = 0;
-        LET SCORE2 = 0;
-        LET ATTEMPTS = 0;
-        LET TIMERINTERVAL;
-        LET TIMELEFT = 300;
+        const params = new URLSearchParams(window.location.search);
+        const playerParam = params.get('player');
+        let player = playerParam ? Number(playerParam) : null;
 
-        CONST COLORS = ['ĐỎ','XANH DƯƠNG','XANH LÁ','VÀNG','ĐEN','TRẮNG','TÍM','CAM','HỒNG','NÂU'];
-        CONST COLORVALUES = ['đỏ','xanh dương','xanh lá','vàng','đen','trắng','tím','cam','hồng','nâu'];
+        const colors = [
+            {name: 'ĐỎ', hex: '#FF0000'},
+            {name: 'CAM', hex: '#FFA500'},
+            {name: 'VÀNG', hex: '#FFFF00'},
+            {name: 'XANH LÁ', hex: '#00FF00'},
+            {name: 'XANH DƯƠNG', hex: '#0000FF'},
+            {name: 'TÍM', hex: '#800080'},
+            {name: 'HỒNG', hex: '#FFC0CB'},
+            {name: 'NÂU', hex: '#A52A2A'},
+            {name: 'ĐEN', hex: '#000000'},
+            {name: 'TRẮNG', hex: '#FFFFFF'},
+            {name: 'XÁM', hex: '#808080'},
+            {name: 'XANH NGỌC', hex: '#00FFFF'},
+            {name: 'HỒNG PHẤN', hex: '#FF69B4'},
+            {name: 'VÀNG KIM', hex: '#FFD700'},
+            {name: 'NAVY', hex: '#000080'},
+            {name: 'ĐỎ RƯỢU', hex: '#8B0000'},
+            {name: 'OLIVE', hex: '#808000'},
+            {name: 'TEAL', hex: '#008080'},
+            {name: 'VIOLET', hex: '#EE82EE'},
+            {name: 'CORAL', hex: '#FF7F50'},
+        ];
 
-        CONST CLICK = DOCUMENT.GETELEMENTBYID('CLICK');
-        CONST CORRECT = DOCUMENT.GETELEMENTBYID('CORRECT');
-        CONST WRONG = DOCUMENT.GETELEMENTBYID('WRONG');
-        CONST TIMEREND = DOCUMENT.GETELEMENTBYID('TIMEREND');
+        let audioCtx = null;
 
-        FUNCTION PLAYSOUND(SOUND) {
-            SOUND.CURRENTTIME = 0;
-            SOUND.PLAY().CATCH(() => {});
-        }
-
-        FUNCTION CONFIRMSTART() {
-            IF (CONFIRM('BẠN XÁC NHẬN MUỐN CHƠI CHỨ?')) {
-                STARTNEWROUND();
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.resume();
             }
         }
 
-        FUNCTION STARTNEWROUND() {
-            DOCUMENT.GETELEMENTBYID('HOME').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('GAME').STYLE.DISPLAY = 'FLEX';
-            DOCUMENT.GETELEMENTBYID('BLACKSCREEN').STYLE.DISPLAY = 'FLEX';
-            DOCUMENT.GETELEMENTBYID('PLAYER1').STYLE.DISPLAY = 'BLOCK';
-            DOCUMENT.GETELEMENTBYID('PLAYER2').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('READYTEXT').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('PLAYAGAINBTN').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('FEEDBACK').TEXTCONTENT = '';
-            DOCUMENT.GETELEMENTBYID('COLORSELECT').VALUE = '';
-            ATTEMPTS = 0;
-            UPDATEATTEMPTS();
-            TIMELEFT = MATH.FLOOR(MATH.RANDOM() * 241) + 60;
-            UPDATETIMER();
-            STARTTIMER();
-            CREATECOLORBUTTONS();
+        function playSound(type) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.3;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.7);
+            } else {
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            }
         }
 
-        FUNCTION UPDATETIMER() {
-            CONST M = MATH.FLOOR(TIMELEFT / 60).TOSTRING().PADSTART(2,'0');
-            CONST S = (TIMELEFT % 60).TOSTRING().PADSTART(2,'0');
-            DOCUMENT.GETELEMENTBYID('TIMER').TEXTCONTENT = `\( {M}: \){S}`;
+        const STATE_KEY = 'colorGameStateV3';
+
+        function getState() {
+            const s = localStorage.getItem(STATE_KEY);
+            return s ? JSON.parse(s) : null;
         }
 
-        FUNCTION STARTTIMER() {
-            CLEARINTERVAL(TIMERINTERVAL);
-            TIMERINTERVAL = SETINTERVAL(() => {
-                TIMELEFT--;
-                UPDATETIMER();
-                IF (TIMELEFT <= 0) {
-                    CLEARINTERVAL(TIMERINTERVAL);
-                    PLAYSOUND(TIMEREND);
-                    ENDWAITING();
-                }
-            }, 1000);
+        function setState(state) {
+            localStorage.setItem(STATE_KEY, JSON.stringify(state));
         }
 
-        FUNCTION ENDWAITING() {
-            DOCUMENT.GETELEMENTBYID('BLACKSCREEN').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('PLAYER1').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('PLAYER2').STYLE.DISPLAY = 'BLOCK';
-            DOCUMENT.GETELEMENTBYID('READYTEXT').STYLE.DISPLAY = 'BLOCK';
+        function getTextColor(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+            return luma > 186 ? '#000000' : '#FFFFFF';
         }
 
-        FUNCTION CREATECOLORBUTTONS() {
-            CONST CONTAINER = DOCUMENT.GETELEMENTBYID('COLORBUTTONS');
-            CONTAINER.INNERHTML = '';
-            COLORS.FOREACH((NAME, INDEX) => {
-                CONST BTN = DOCUMENT.CREATEELEMENT('BUTTON');
-                BTN.CLASSNAME = 'COLOR-BTN';
-                BTN.TEXTCONTENT = NAME;
-                BTN.ONCLICK = () => CONFIRMGUESSCOLOR(COLORVALUES[INDEX], NAME);
-                CONTAINER.APPENDCHILD(BTN);
+        function createButton(text, onclick) {
+            const btn = document.createElement('BUTTON');
+            btn.textContent = text;
+            btn.classList.add('BTN');
+            btn.onclick = () => {
+                initAudio();
+                onclick();
+            };
+            return btn;
+        }
+
+        function createFooter(parent) {
+            const footer = document.createElement('FOOTER');
+            const lines = [
+                'MADE IN VN 🇻🇳',
+                'MADE BY : NGUYỄN CHÍ DỰ ♥️🇻🇳',
+                'GMAIL HỖ TRỢ : Herogoodboymc2024@gmail.com'
+            ];
+            lines.forEach(line => {
+                const p = document.createElement('P');
+                p.textContent = line;
+                footer.appendChild(p);
             });
+            const reportBtn = createButton('BÁO CÁO LỖI', () => {
+                document.getElementById('BUG-MODAL').style.display = 'BLOCK';
+            });
+            footer.appendChild(reportBtn);
+            parent.appendChild(footer);
         }
 
-        FUNCTION CONFIRMGUESSCOLOR(VALUE, NAME) {
-            PLAYSOUND(CLICK);
-            IF (CONFIRM(`BẠN XÁC NHẬN CHỌN MÀU ${NAME} CHỨ? SAI LÀ BẠN BỊ TRỪ ĐIỂM`)) {
-                PLAYERGUESS(VALUE);
+        if (!player) {
+            // TRANG CHỦ
+            document.body.innerHTML = '';
+            const container = document.createElement('DIV');
+            container.id = 'CONTAINER';
+            document.body.appendChild(container);
+
+            const header = document.createElement('HEADER');
+            const title = document.createElement('H1');
+            title.textContent = 'TRÒ CHƠI ĐỐ MÀU';
+            header.appendChild(title);
+
+            const subtitle = document.createElement('P');
+            subtitle.textContent = 'CHÚC CÁC BẠN CHƠI VUI VẺ CÓ LỖI KÉO XUỐNG DƯỚI CHÂN TRANG BẤM VÀO NÚT BÁO CÁO NHA :)';
+            subtitle.classList.add('SUBTITLE');
+            header.appendChild(subtitle);
+            container.appendChild(header);
+
+            const main = document.createElement('DIV');
+            main.classList.add('HOME-MAIN');
+
+            const info = document.createElement('P');
+            info.textContent = 'MỞ 2 TAB HOẶC 2 THIẾT BỊ ĐỂ CHƠI VỚI NHAU NHÉ!';
+            info.style.fontWeight = 'BOLD';
+            info.style.color = '#FFFF00';
+            info.style.fontSize = '1.8EM';
+            main.appendChild(info);
+
+            const btn1 = createButton('TÔI LÀ PLAYER 1 (ĐẶT MÀU ĐẦU TIÊN)', () => {
+                if (confirm('BẠN SẴN SÀNG CHƠI CHƯA?')) {
+                    window.open(location.pathname + '?player=1', '_blank');
+                }
+            });
+            btn1.classList.add('LARGE');
+            main.appendChild(btn1);
+
+            const btn2 = createButton('TÔI LÀ PLAYER 2 (ĐOÁN MÀU)', () => {
+                if (confirm('BẠN SẴN SÀNG CHƠI CHƯA?')) {
+                    window.open(location.pathname + '?player=2', '_blank');
+                }
+            });
+            btn2.classList.add('LARGE');
+            main.appendChild(btn2);
+
+            container.appendChild(main);
+            createFooter(container);
+
+            // MODAL BÁO LỖI
+            const modal = document.createElement('DIV');
+            modal.id = 'BUG-MODAL';
+            const h = document.createElement('H2');
+            h.textContent = 'BÁO CÁO LỖI';
+            modal.appendChild(h);
+
+            const inputs = ['TÊN CỦA BẠN (BẮT BUỘC)', 'GMAIL CỦA BẠN (BẮT BUỘC)', 'MÔ TẢ LỖI (BẮT BUỘC)'];
+            const fields = [];
+            inputs.forEach(placeholder => {
+                const input = document.createElement(placeholder.includes('MÔ TẢ') ? 'TEXTAREA' : 'INPUT');
+                input.placeholder = placeholder;
+                if (placeholder.includes('MÔ TẢ')) input.rows = 6;
+                modal.appendChild(input);
+                fields.push(input);
+            });
+
+            const send = createButton('GỬI BÁO CÁO', () => {
+                if (fields.every(f => f.value.trim())) {
+                    alert('CẢM ƠN BẠN ĐÃ BÁO CÁO! MÌNH SẼ SỬA NGAY NHA 😊');
+                    modal.style.display = 'NONE';
+                    fields.forEach(f => f.value = '');
+                } else {
+                    alert('BẠN BẮT BUỘC PHẢI NHẬP ĐẦY ĐỦ MỚI GỬI ĐƯỢC NHA');
+                }
+            });
+            modal.appendChild(send);
+
+            const close = createButton('ĐÓNG', () => modal.style.display = 'NONE');
+            modal.appendChild(close);
+
+            document.body.appendChild(modal);
+        } else {
+            // TRANG CHƠI
+            document.body.innerHTML = '';
+            const container = document.createElement('DIV');
+            container.id = 'CONTAINER';
+            document.body.appendChild(container);
+
+            const header = document.createElement('DIV');
+            header.classList.add('GAME-HEADER');
+            const title = document.createElement('H1');
+            title.textContent = 'TRÒ CHƠI ĐỐ MÀU - PLAYER ' + player;
+            header.appendChild(title);
+
+            const backBtn = createButton('TRỞ VỀ TRANG CHỦ', () => {
+                if (confirm('THOÁT KHỎI TRÒ CHƠI? (KHÔNG TRỪ ĐIỂM)')) {
+                    location.href = location.pathname;
+                }
+            });
+            header.appendChild(backBtn);
+
+            const resetBtn = createButton('RESET ĐIỂM', () => {
+                if (confirm('RESET ĐIỂM CỦA CẢ HAI VỀ 0?')) {
+                    const state = getState() || {scores: {1:0,2:0}};
+                    state.scores = {1:0, 2:0};
+                    setState(state);
+                    updateView();
+                }
+            });
+            header.appendChild(resetBtn);
+
+            container.appendChild(header);
+
+            const scoreBoard = document.createElement('DIV');
+            scoreBoard.id = 'SCORE-BOARD';
+            const p1 = document.createElement('DIV');
+            p1.id = 'P1-SCORE';
+            const p2 = document.createElement('DIV');
+            p2.id = 'P2-SCORE';
+            scoreBoard.appendChild(p1);
+            scoreBoard.appendChild(p2);
+            container.appendChild(scoreBoard);
+
+            const mainView = document.createElement('DIV');
+            mainView.id = 'MAIN-VIEW';
+            container.appendChild(mainView);
+
+            const overlay = document.createElement('DIV');
+            overlay.id = 'OVERLAY';
+            const waitText = document.createElement('DIV');
+            waitText.textContent = 'VUI LÒNG ĐỢI BÊN KIA ĐẶT MÀU XONG...';
+            waitText.classList.add('BLINK');
+            const readyText = document.createElement('DIV');
+            readyText.textContent = 'BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?';
+            readyText.style.display = 'NONE';
+            readyText.style.fontSize = '3EM';
+            readyText.style.marginTop = '30PX';
+            const timerDiv = document.createElement('DIV');
+            timerDiv.id = 'TIMER';
+            overlay.appendChild(waitText);
+            overlay.appendChild(readyText);
+            overlay.appendChild(timerDiv);
+            document.body.appendChild(overlay);
+
+            createFooter(container);
+
+            let selectedColor = null;
+
+            function updateScores() {
+                const state = getState() || {scores: {1:0,2:0}};
+                document.getElementById('P1-SCORE').textContent = `PLAYER 1: ${state.scores[1] || 0} ĐIỂM`;
+                document.getElementById('P2-SCORE').textContent = `PLAYER 2: ${state.scores[2] || 0} ĐIỂM`;
             }
-            // NẾU BẤM "KHÔNG" THÌ KHÔNG LÀM GÌ, QUAY LẠI CHỌN TIẾP
-        }
 
-        FUNCTION PLAYERSETCOLOR() {
-            PLAYSOUND(CLICK);
-            SELECTEDCOLOR = DOCUMENT.GETELEMENTBYID('COLORSELECT').VALUE.TOLOWERCASE();
-            IF (!SELECTEDCOLOR) {
-                ALERT('VUI LÒNG CHỌN MÀU BÍ MẬT!');
-                RETURN;
-            }
-            ALERT('MÀU ĐÃ ĐẶT! BÂY GIỜ CHỜ ĐẾM NGƯỢC...');
-            DOCUMENT.GETELEMENTBYID('PLAYER1').STYLE.DISPLAY = 'NONE';
-        }
-
-        FUNCTION PLAYERGUESS(GUESS) {
-            ATTEMPTS++;
-            UPDATEATTEMPTS();
-            CONST FEEDBACK = DOCUMENT.GETELEMENTBYID('FEEDBACK');
-
-            IF (GUESS === SELECTEDCOLOR) {
-                PLAYSOUND(CORRECT);
-                FEEDBACK.TEXTCONTENT = 'OH THẾ LÀ BẠN CHỌN ĐÚNG MÀU RỒI + CHO BẠN 20 ĐIỂM NÈ HIHI';
-                FEEDBACK.STYLE.COLOR = '#2ECC71';
-                SCORE2 += 20;
-                UPDATESCORES();
-                SETTIMEOUT(() => {
-                    IF (CONFIRM('ĐÚNG RỒI! BẠN MUỐN CHƠI VÒNG MỚI KHÔNG?')) {
-                        STARTNEWROUND();
-                    } ELSE {
-                        BACKTOHOME();
+            function createPalette(isSetting) {
+                const grid = document.createElement('DIV');
+                grid.classList.add('COLOR-GRID');
+                colors.forEach(c => {
+                    const btn = document.createElement('BUTTON');
+                    btn.classList.add('COLOR-BTN');
+                    btn.style.backgroundColor = c.hex;
+                    btn.style.color = getTextColor(c.hex);
+                    btn.textContent = c.name;
+                    if (isSetting) {
+                        btn.onclick = () => {
+                            selectedColor = c.hex;
+                            grid.querySelectorAll('.COLOR-BTN').forEach(b => b.classList.remove('SELECTED'));
+                            btn.classList.add('SELECTED');
+                        };
+                    } else {
+                        btn.onclick = () => {
+                            const state = getState();
+                            if (c.hex === state.secretColor) {
+                                playSound('correct');
+                                const newState = {...state};
+                                newState.scores[player] += 10;
+                                setState(newState);
+                                showResult(true, 'ỐI TRỜI ƠI! ĐOÁN ĐÚNG RỒI!!! +10 ĐIỂM 🎉🎉');
+                            } else {
+                                playSound('wrong');
+                                const newState = {...state};
+                                newState.scores[player] -= 10;
+                                newState.wrongGuesses = (newState.wrongGuesses || 0) + 1;
+                                setState(newState);
+                                alert('TẠI SAO LẠI CHỌN SAI THẾ NÀY??? -10 ĐIỂM 😭');
+                                updateView();
+                            }
+                        };
                     }
-                }, 2000);
-            } ELSE {
-                PLAYSOUND(WRONG);
-                FEEDBACK.TEXTCONTENT = 'TẠI SAO BẠN LẠI CHỌN SAI ??? -10 ĐIỂM';
-                FEEDBACK.STYLE.COLOR = '#E74C3C';
-                SCORE2 -= 10;
-                UPDATESCORES();
-                IF (ATTEMPTS >= 3) {
-                    DOCUMENT.GETELEMENTBYID('PLAYAGAINBTN').STYLE.DISPLAY = 'BLOCK';
+                    grid.appendChild(btn);
+                });
+                return grid;
+            }
+
+            function showResult(correct, message) {
+                mainView.innerHTML = '';
+                const msg = document.createElement('H2');
+                msg.textContent = message;
+                msg.style.color = correct ? '#00FF00' : '#FF4444';
+                mainView.appendChild(msg);
+
+                const nextBtn = createButton('CHUYỂN LƯỢT - PLAYER ' + (3 - player) + ' ĐẶT MÀU', () => {
+                    const state = getState();
+                    const newState = {...state};
+                    newState.currentSetter = 3 - player;
+                    newState.state = 'SETTING';
+                    newState.secretColor = null;
+                    newState.wrongGuesses = 0;
+                    setState(newState);
+                    updateView();
+                });
+                nextBtn.classList.add('LARGE');
+                mainView.appendChild(nextBtn);
+            }
+
+            function updateView() {
+                updateScores();
+                const state = getState();
+                if (!state) {
+                    setState({
+                        currentSetter: 1,
+                        state: 'SETTING',
+                        scores: {1:0,2:0},
+                        wrongGuesses: 0
+                    });
+                    updateView();
+                    return;
+                }
+
+                const isSetter = player === state.currentSetter;
+                mainView.innerHTML = '';
+                overlay.style.display = 'NONE';
+                waitText.style.display = 'BLOCK';
+                readyText.style.display = 'NONE';
+                document.getElementById('TIMER').textContent = '';
+
+                if (state.state === 'SETTING') {
+                    if (isSetter) {
+                        const h = document.createElement('H2');
+                        h.textContent = 'BẠN ĐẶT MÀU - CHỌN MÀU BÍ MẬT ĐI!';
+                        mainView.appendChild(h);
+                        selectedColor = null;
+                        mainView.appendChild(createPalette(true));
+
+                        const confirmBtn = createButton('XÁC NHẬN ĐẶT MÀU XONG', () => {
+                            if (!selectedColor) return alert('CHỌN MÀU ĐI BẠN ƠI!');
+                            const newState = {...state};
+                            newState.secretColor = selectedColor;
+                            newState.state = 'WAITING';
+                            newState.timerStart = Date.now();
+                            newState.timerDuration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
+                            setState(newState);
+                            updateView();
+                        });
+                        confirmBtn.classList.add('LARGE');
+                        mainView.appendChild(confirmBtn);
+                    } else {
+                        const h = document.createElement('H2');
+                        h.textContent = 'CHỜ PLAYER ' + state.currentSetter + ' ĐẶT MÀU...';
+                        mainView.appendChild(h);
+                    }
+                } else if (state.state === 'WAITING') {
+                    overlay.style.display = 'FLEX';
+                    if (isSetter) {
+                        const h = document.createElement('H2');
+                        h.textContent = 'ĐÃ ĐẶT XONG - CHỜ THỜI GIAN NGẪU NHIÊN...';
+                        mainView.appendChild(h);
+                    }
+                } else if (state.state === 'GUESSING') {
+                    overlay.style.display = 'FLEX';
+                    waitText.style.display = 'NONE';
+                    readyText.style.display = 'BLOCK';
+
+                    if (!isSetter) {
+                        mainView.innerHTML = '';
+                        const h = document.createElement('H2');
+                        h.textContent = 'ĐOÁN MÀU ĐI NÀO!!!';
+                        mainView.appendChild(h);
+                        mainView.appendChild(createPalette(false));
+
+                        const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
+                            if (confirm('TỪ BỎ THẬT À? -10 ĐIỂM NHÉ')) {
+                                const newState = {...state};
+                                newState.scores[player] -= 10;
+                                setState(newState);
+                                showResult(false, 'BẠN ĐÃ TỪ BỎ LƯỢT ĐOÁN');
+                            }
+                        });
+                        surrender.style.background = '#FF4444';
+                        mainView.appendChild(surrender);
+
+                        if (state.wrongGuesses >= 3) {
+                            const restart = createButton('CHƠI LẠI LƯỢT (SAI QUÁ 3 LẦN)', () => {
+                                if (confirm('CHƠI LẠI LƯỢT NÀY NHÉ?')) {
+                                    const newState = {...state};
+                                    newState.state = 'SETTING';
+                                    newState.secretColor = null;
+                                    newState.wrongGuesses = 0;
+                                    setState(newState);
+                                    updateView();
+                                }
+                            });
+                            restart.style.background = '#FF9800';
+                            mainView.appendChild(restart);
+                        }
+                    } else {
+                        const h = document.createElement('H2');
+                        h.textContent = 'CHỜ PLAYER ' + (3-player) + ' ĐOÁN...';
+                        mainView.appendChild(h);
+                    }
                 }
             }
-        }
 
-        FUNCTION RESTARTROUNDCONFIRM() {
-            IF (CONFIRM('BẠN MUỐN CHƠI LẠI VÒNG NÀY?')) {
-                STARTNEWROUND();
-            }
-        }
+            window.addEventListener('storage', (e) => {
+                if (e.key === STATE_KEY) updateView();
+            });
 
-        FUNCTION RESTARTGAMECONFIRM() {
-            IF (CONFIRM('RESTART TOÀN BỘ TRÒ CHƠI?')) {
-                SCORE1 = 0;
-                SCORE2 = 0;
-                UPDATESCORES();
-                STARTNEWROUND();
-            }
-        }
+            setInterval(() => {
+                const state = getState();
+                if (state && state.state === 'WAITING') {
+                    const elapsed = Date.now() - state.timerStart;
+                    const remaining = state.timerDuration - elapsed;
+                    if (remaining <= 0) {
+                        const newState = {...state};
+                        newState.state = 'GUESSING';
+                        setState(newState);
+                        updateView();
+                    } else {
+                        const m = String(Math.floor(remaining / 60000)).padStart(2, '0');
+                        const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+                        document.getElementById('TIMER').textContent = m + ':' + s;
+                    }
+                }
+            }, 500);
 
-        FUNCTION FORFEITCONFIRM() {
-            IF (CONFIRM('BẠN CHẮC CHẮN TỪ BỎ? -10 ĐIỂM')) {
-                SCORE2 -= 10;
-                UPDATESCORES();
-                BACKTOHOME();
-            }
-        }
-
-        FUNCTION RESETSCORESCONFIRM() {
-            IF (CONFIRM('RESET TẤT CẢ ĐIỂM VỀ 0?')) {
-                SCORE1 = 0;
-                SCORE2 = 0;
-                UPDATESCORES();
-            }
-        }
-
-        FUNCTION BACKTOHOME() {
-            CLEARINTERVAL(TIMERINTERVAL);
-            DOCUMENT.GETELEMENTBYID('GAME').STYLE.DISPLAY = 'NONE';
-            DOCUMENT.GETELEMENTBYID('HOME').STYLE.DISPLAY = 'BLOCK';
-        }
-
-        FUNCTION UPDATESCORES() {
-            DOCUMENT.GETELEMENTBYID('SCORE1').TEXTCONTENT = MATH.MAX(0, SCORE1);
-            DOCUMENT.GETELEMENTBYID('SCORE2').TEXTCONTENT = MATH.MAX(0, SCORE2);
-        }
-
-        FUNCTION UPDATEATTEMPTS() {
-            DOCUMENT.GETELEMENTBYID('ATTEMPTS').TEXTCONTENT = ATTEMPTS;
-        }
-
-        FUNCTION OPENREPORTMODAL() { DOCUMENT.GETELEMENTBYID('REPORTMODAL').STYLE.DISPLAY = 'FLEX'; }
-        FUNCTION CLOSEREPORTMODAL() { DOCUMENT.GETELEMENTBYID('REPORTMODAL').STYLE.DISPLAY = 'NONE'; }
-        FUNCTION SUBMITREPORT() {
-            CONST INFO = DOCUMENT.GETELEMENTBYID('INFO').VALUE.TRIM();
-            CONST GMAIL = DOCUMENT.GETELEMENTBYID('GMAIL').VALUE.TRIM();
-            CONST MESSAGE = DOCUMENT.GETELEMENTBYID('MESSAGE').VALUE.TRIM();
-            IF (!INFO || !GMAIL || !MESSAGE) {
-                ALERT('BẠN BẮT BUỘC PHẢI NHẬP ĐẦY ĐỦ MỚI CÓ THỂ GỬI ĐƯỢC');
-            } ELSE {
-                ALERT('CẢM ƠN! BÁO CÁO ĐÃ GỬI (GIẢ LẬP)');
-                DOCUMENT.GETELEMENTBYID('INFO').VALUE = '';
-                DOCUMENT.GETELEMENTBYID('GMAIL').VALUE = '';
-                DOCUMENT.GETELEMENTBYID('MESSAGE').VALUE = '';
-                CLOSEREPORTMODAL();
-            }
+            updateView();
         }
     </script>
 </body>
