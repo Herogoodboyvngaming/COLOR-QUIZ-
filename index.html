@@ -443,7 +443,7 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                let waitDuration = Math.floor(Math.random() * 240000) + 60000;
+                const waitDuration = 30000; // CỐ ĐỊNH 30 GIÂY
                 const state = getState();
                 const newState = {
                     secretColor: secret,
