@@ -67,7 +67,7 @@
             }
         }
 
-        const STATE_KEY = 'colorGameStateV3';
+        const STATE_KEY = 'colorGameBotV1';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
@@ -138,32 +138,23 @@
             main.classList.add('HOME-MAIN');
 
             const info = document.createElement('P');
-            info.textContent = 'MỞ 2 TAB HOẶC 2 THIẾT BỊ ĐỂ CHƠI VỚI NHAU NHÉ!';
+            info.textContent = 'PLAYER 1 LÀ MÁY (BOT) - BẠN SẼ LÀ PLAYER 2 ĐOÁN MÀU!';
             info.style.fontWeight = 'BOLD';
             info.style.color = '#FFFF00';
-            info.style.fontSize = '1.8EM';
+            info.style.fontSize = '2EM';
             main.appendChild(info);
 
-            const btn1 = createButton('TÔI LÀ PLAYER 1 (ĐẶT MÀU ĐẦU TIÊN)', () => {
+            const startBtn = createButton('BẮT ĐẦU CHƠI VỚI BOT', () => {
                 if (confirm('BẠN SẴN SÀNG CHƠI CHƯA?')) {
-                    window.open(location.pathname + '?player=1', '_blank');
+                    location.href = location.pathname + '?player=2';
                 }
             });
-            btn1.classList.add('LARGE');
-            main.appendChild(btn1);
-
-            const btn2 = createButton('TÔI LÀ PLAYER 2 (ĐOÁN MÀU)', () => {
-                if (confirm('BẠN SẴN SÀNG CHƠI CHƯA?')) {
-                    window.open(location.pathname + '?player=2', '_blank');
-                }
-            });
-            btn2.classList.add('LARGE');
-            main.appendChild(btn2);
+            startBtn.classList.add('LARGE');
+            main.appendChild(startBtn);
 
             container.appendChild(main);
             createFooter(container);
 
-            // MODAL BÁO LỖI
             const modal = document.createElement('DIV');
             modal.id = 'BUG-MODAL';
             const h = document.createElement('H2');
@@ -195,8 +186,8 @@
             modal.appendChild(close);
 
             document.body.appendChild(modal);
-        } else {
-            // TRANG CHƠI
+        } else if (player === 2) {
+            // PLAYER 2 - NGƯỜI CHƠI THẬT
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -205,21 +196,19 @@
             const header = document.createElement('DIV');
             header.classList.add('GAME-HEADER');
             const title = document.createElement('H1');
-            title.textContent = 'TRÒ CHƠI ĐỐ MÀU - PLAYER ' + player;
+            title.textContent = 'TRÒ CHƠI ĐỐ MÀU - BẠN VS BOT';
             header.appendChild(title);
 
             const backBtn = createButton('TRỞ VỀ TRANG CHỦ', () => {
-                if (confirm('THOÁT KHỎI TRÒ CHƠI? (KHÔNG TRỪ ĐIỂM)')) {
+                if (confirm('THOÁT KHỎI TRÒ CHƠI?')) {
                     location.href = location.pathname;
                 }
             });
             header.appendChild(backBtn);
 
             const resetBtn = createButton('RESET ĐIỂM', () => {
-                if (confirm('RESET ĐIỂM CỦA CẢ HAI VỀ 0?')) {
-                    const state = getState() || {scores: {1:0,2:0}};
-                    state.scores = {1:0, 2:0};
-                    setState(state);
+                if (confirm('RESET ĐIỂM CỦA BẠN VỀ 0?')) {
+                    localStorage.removeItem(STATE_KEY);
                     updateView();
                 }
             });
@@ -229,12 +218,12 @@
 
             const scoreBoard = document.createElement('DIV');
             scoreBoard.id = 'SCORE-BOARD';
-            const p1 = document.createElement('DIV');
-            p1.id = 'P1-SCORE';
-            const p2 = document.createElement('DIV');
-            p2.id = 'P2-SCORE';
-            scoreBoard.appendChild(p1);
-            scoreBoard.appendChild(p2);
+            const botScore = document.createElement('DIV');
+            botScore.id = 'BOT-SCORE';
+            const playerScore = document.createElement('DIV');
+            playerScore.id = 'PLAYER-SCORE';
+            scoreBoard.appendChild(botScore);
+            scoreBoard.appendChild(playerScore);
             container.appendChild(scoreBoard);
 
             const mainView = document.createElement('DIV');
@@ -244,31 +233,23 @@
             const overlay = document.createElement('DIV');
             overlay.id = 'OVERLAY';
             const waitText = document.createElement('DIV');
-            waitText.textContent = 'VUI LÒNG ĐỢI BÊN KIA ĐẶT MÀU XONG...';
+            waitText.textContent = 'BOT ĐANG ĐẶT MÀU BÍ MẬT...';
             waitText.classList.add('BLINK');
-            const readyText = document.createElement('DIV');
-            readyText.textContent = 'BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?';
-            readyText.style.display = 'NONE';
-            readyText.style.fontSize = '3EM';
-            readyText.style.marginTop = '30PX';
             const timerDiv = document.createElement('DIV');
             timerDiv.id = 'TIMER';
             overlay.appendChild(waitText);
-            overlay.appendChild(readyText);
             overlay.appendChild(timerDiv);
             document.body.appendChild(overlay);
 
             createFooter(container);
 
-            let selectedColor = null;
-
             function updateScores() {
-                const state = getState() || {scores: {1:0,2:0}};
-                document.getElementById('P1-SCORE').textContent = `PLAYER 1: ${state.scores[1] || 0} ĐIỂM`;
-                document.getElementById('P2-SCORE').textContent = `PLAYER 2: ${state.scores[2] || 0} ĐIỂM`;
+                const state = getState() || {botScore: 0, playerScore: 0};
+                document.getElementById('BOT-SCORE').textContent = `BOT: ${state.botScore} ĐIỂM`;
+                document.getElementById('PLAYER-SCORE').textContent = `BẠN: ${state.playerScore} ĐIỂM`;
             }
 
-            function createPalette(isSetting) {
+            function createPalette() {
                 const grid = document.createElement('DIV');
                 grid.classList.add('COLOR-GRID');
                 colors.forEach(c => {
@@ -277,159 +258,92 @@
                     btn.style.backgroundColor = c.hex;
                     btn.style.color = getTextColor(c.hex);
                     btn.textContent = c.name;
-                    if (isSetting) {
-                        btn.onclick = () => {
-                            selectedColor = c.hex;
-                            grid.querySelectorAll('.COLOR-BTN').forEach(b => b.classList.remove('SELECTED'));
-                            btn.classList.add('SELECTED');
-                        };
-                    } else {
-                        btn.onclick = () => {
-                            const state = getState();
-                            if (c.hex === state.secretColor) {
-                                playSound('correct');
-                                const newState = {...state};
-                                newState.scores[player] += 10;
-                                setState(newState);
-                                showResult(true, 'ỐI TRỜI ƠI! ĐOÁN ĐÚNG RỒI!!! +10 ĐIỂM 🎉🎉');
-                            } else {
-                                playSound('wrong');
-                                const newState = {...state};
-                                newState.scores[player] -= 10;
-                                newState.wrongGuesses = (newState.wrongGuesses || 0) + 1;
-                                setState(newState);
-                                alert('TẠI SAO LẠI CHỌN SAI THẾ NÀY??? -10 ĐIỂM 😭');
-                                updateView();
-                            }
-                        };
-                    }
+                    btn.onclick = () => {
+                        const state = getState();
+                        if (c.hex === state.secretColor) {
+                            playSound('correct');
+                            const newState = {...state};
+                            newState.playerScore += 10;
+                            setState(newState);
+                            showResult(true);
+                        } else {
+                            playSound('wrong');
+                            const newState = {...state};
+                            newState.playerScore -= 10;
+                            newState.wrongGuesses += 1;
+                            setState(newState);
+                            alert('SAI RỒI!!! -10 ĐIỂM 😭');
+                            updateView();
+                        }
+                    };
                     grid.appendChild(btn);
                 });
                 return grid;
             }
 
-            function showResult(correct, message) {
+            function showResult(correct) {
                 mainView.innerHTML = '';
                 const msg = document.createElement('H2');
-                msg.textContent = message;
+                msg.textContent = correct ? 'CHÚC MỪNG! BẠN ĐOÁN ĐÚNG RỒI +10 ĐIỂM 🎉' : 'BẠN ĐÃ TỪ BỎ HOẶC SAI QUÁ NHIỀU';
                 msg.style.color = correct ? '#00FF00' : '#FF4444';
                 mainView.appendChild(msg);
 
-                const nextBtn = createButton('CHUYỂN LƯỢT - PLAYER ' + (3 - player) + ' ĐẶT MÀU', () => {
-                    const state = getState();
-                    const newState = {...state};
-                    newState.currentSetter = 3 - player;
-                    newState.state = 'SETTING';
-                    newState.secretColor = null;
-                    newState.wrongGuesses = 0;
-                    setState(newState);
-                    updateView();
+                const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
+                    localStorage.removeItem(STATE_KEY);
+                    botSetColorAndWait();
                 });
                 nextBtn.classList.add('LARGE');
                 mainView.appendChild(nextBtn);
             }
 
+            function botSetColorAndWait() {
+                const secret = colors[Math.floor(Math.random() * colors.length)].hex;
+                const duration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
+                setState({
+                    secretColor: secret,
+                    state: 'WAITING',
+                    timerStart: Date.now(),
+                    timerDuration: duration,
+                    botScore: (getState()?.botScore || 0),
+                    playerScore: (getState()?.playerScore || 0),
+                    wrongGuesses: 0
+                });
+                updateView();
+            }
+
             function updateView() {
                 updateScores();
                 const state = getState();
-                if (!state) {
-                    setState({
-                        currentSetter: 1,
-                        state: 'SETTING',
-                        scores: {1:0,2:0},
-                        wrongGuesses: 0
-                    });
-                    updateView();
-                    return;
-                }
-
-                const isSetter = player === state.currentSetter;
                 mainView.innerHTML = '';
                 overlay.style.display = 'NONE';
-                waitText.style.display = 'BLOCK';
-                readyText.style.display = 'NONE';
-                document.getElementById('TIMER').textContent = '';
 
-                if (state.state === 'SETTING') {
-                    if (isSetter) {
-                        const h = document.createElement('H2');
-                        h.textContent = 'BẠN ĐẶT MÀU - CHỌN MÀU BÍ MẬT ĐI!';
-                        mainView.appendChild(h);
-                        selectedColor = null;
-                        mainView.appendChild(createPalette(true));
+                if (!state || state.state === 'GUESSING' || state.wrongGuesses >= 3) {
+                    if (state && state.wrongGuesses >= 3) {
+                        showResult(false);
+                        return;
+                    }
+                    const ready = document.createElement('H2');
+                    ready.textContent = 'BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?';
+                    mainView.appendChild(ready);
+                    const h = document.createElement('H2');
+                    h.textContent = 'ĐOÁN ĐI NÀO!!!';
+                    mainView.appendChild(h);
+                    mainView.appendChild(createPalette());
 
-                        const confirmBtn = createButton('XÁC NHẬN ĐẶT MÀU XONG', () => {
-                            if (!selectedColor) return alert('CHỌN MÀU ĐI BẠN ƠI!');
-                            const newState = {...state};
-                            newState.secretColor = selectedColor;
-                            newState.state = 'WAITING';
-                            newState.timerStart = Date.now();
-                            newState.timerDuration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
+                    const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
+                        if (confirm('TỪ BỎ THẬT À?')) {
+                            const newState = {...getState()};
+                            newState.playerScore -= 10;
                             setState(newState);
-                            updateView();
-                        });
-                        confirmBtn.classList.add('LARGE');
-                        mainView.appendChild(confirmBtn);
-                    } else {
-                        const h = document.createElement('H2');
-                        h.textContent = 'CHỜ PLAYER ' + state.currentSetter + ' ĐẶT MÀU...';
-                        mainView.appendChild(h);
-                    }
-                } else if (state.state === 'WAITING') {
-                    overlay.style.display = 'FLEX';
-                    if (isSetter) {
-                        const h = document.createElement('H2');
-                        h.textContent = 'ĐÃ ĐẶT XONG - CHỜ THỜI GIAN NGẪU NHIÊN...';
-                        mainView.appendChild(h);
-                    }
-                } else if (state.state === 'GUESSING') {
-                    overlay.style.display = 'FLEX';
-                    waitText.style.display = 'NONE';
-                    readyText.style.display = 'BLOCK';
-
-                    if (!isSetter) {
-                        mainView.innerHTML = '';
-                        const h = document.createElement('H2');
-                        h.textContent = 'ĐOÁN MÀU ĐI NÀO!!!';
-                        mainView.appendChild(h);
-                        mainView.appendChild(createPalette(false));
-
-                        const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
-                            if (confirm('TỪ BỎ THẬT À? -10 ĐIỂM NHÉ')) {
-                                const newState = {...state};
-                                newState.scores[player] -= 10;
-                                setState(newState);
-                                showResult(false, 'BẠN ĐÃ TỪ BỎ LƯỢT ĐOÁN');
-                            }
-                        });
-                        surrender.style.background = '#FF4444';
-                        mainView.appendChild(surrender);
-
-                        if (state.wrongGuesses >= 3) {
-                            const restart = createButton('CHƠI LẠI LƯỢT (SAI QUÁ 3 LẦN)', () => {
-                                if (confirm('CHƠI LẠI LƯỢT NÀY NHÉ?')) {
-                                    const newState = {...state};
-                                    newState.state = 'SETTING';
-                                    newState.secretColor = null;
-                                    newState.wrongGuesses = 0;
-                                    setState(newState);
-                                    updateView();
-                                }
-                            });
-                            restart.style.background = '#FF9800';
-                            mainView.appendChild(restart);
+                            showResult(false);
                         }
-                    } else {
-                        const h = document.createElement('H2');
-                        h.textContent = 'CHỜ PLAYER ' + (3-player) + ' ĐOÁN...';
-                        mainView.appendChild(h);
-                    }
+                    });
+                    surrender.style.background = '#FF4444';
+                    mainView.appendChild(surrender);
+                } else {
+                    overlay.style.display = 'FLEX';
                 }
             }
-
-            window.addEventListener('storage', (e) => {
-                if (e.key === STATE_KEY) updateView();
-            });
 
             setInterval(() => {
                 const state = getState();
@@ -449,7 +363,14 @@
                 }
             }, 500);
 
-            updateView();
+            // Bắt đầu lượt đầu
+            if (!getState()) {
+                botSetColorAndWait();
+            } else {
+                updateView();
+            }
+        } else {
+            alert('CHỈ CÓ PLAYER 2 THÔI NHÉ - PLAYER 1 LÀ BOT!');
         }
     </script>
 </body>
