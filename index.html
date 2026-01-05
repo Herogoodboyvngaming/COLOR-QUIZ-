@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TRÒ CHƠI ĐỐ MÀU</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -51,7 +51,7 @@
             audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGamePersistentV8';
+        const STATE_KEY = 'colorGamePersistentV10';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
@@ -106,7 +106,6 @@
         ];
 
         if (!player) {
-            // TRANG CHỦ (giữ nguyên)
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -232,16 +231,17 @@
             mainView.id = 'MAIN-VIEW';
             container.appendChild(mainView);
 
-            // OVERLAY CHO GIAI ĐOẠN ĐẶT MÀU (WAITING) - KHÔNG HIỆN TIMER
             const overlay = document.createElement('DIV');
             overlay.id = 'OVERLAY';
             const waitText = document.createElement('DIV');
             waitText.textContent = 'BOT ĐANG ĐẶT MÀU BÍ MẬT...';
             waitText.classList.add('BLINK');
+            const waitTimer = document.createElement('DIV');
+            waitTimer.id = 'WAIT-TIMER';
             overlay.appendChild(waitText);
+            overlay.appendChild(waitTimer);
             document.body.appendChild(overlay);
 
-            // TIMER RIÊNG CHO GIAI ĐOẠN ĐOÁN
             const guessTimer = document.createElement('DIV');
             guessTimer.id = 'GUESS-TIMER';
             guessTimer.style.display = 'NONE';
@@ -266,9 +266,13 @@
 
             let hasWarned = false;
 
-            // CÁC HÀM GIỮ NGUYÊN (showShop, showInventory, applySkill, createPalette, showResult)
+            function updateScores() {
+                const state = getState();
+                document.getElementById('PLAYER-SCORE').textContent = `ĐIỂM CỦA BẠN: ${state.playerScore.toLocaleString()}`;
+            }
 
             function showShop() {
+                // GIỮ NGUYÊN
                 const state = getState();
                 shopModal.innerHTML = '';
                 shopModal.style.display = 'BLOCK';
@@ -328,6 +332,7 @@
             }
 
             function showInventory() {
+                // GIỮ NGUYÊN
                 const state = getState();
                 inventoryBar.innerHTML = '';
                 inventoryBar.style.display = 'FLEX';
@@ -439,7 +444,6 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                // GIAI ĐOẠN ĐẶT MÀU: 1-5 PHÚT, KHÔNG HIỆN TIMER
                 let waitDuration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
                 const state = getState();
                 const newState = {
@@ -513,7 +517,6 @@
                     const elapsed = Date.now() - state.timerStart;
                     const remaining = state.timerDuration - elapsed;
                     if (remaining <= 0) {
-                        // CHUYỂN SANG GIAI ĐOẠN ĐOÁN VỚI THỜI GIAN 1-10 PHÚT
                         const guessDuration = Math.floor(Math.random() * 540000) + 60000; // 1-10 phút
                         const newState = {...state};
                         newState.state = 'GUESSING';
@@ -521,8 +524,11 @@
                         newState.guessTimerDuration = guessDuration;
                         setState(newState);
                         updateView();
+                    } else {
+                        const m = String(Math.floor(remaining / 60000)).padStart(2, '0');
+                        const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+                        document.getElementById('WAIT-TIMER').textContent = m + ':' + s;
                     }
-                    // KHÔNG HIỆN TIMER TRONG GIAI ĐOẠN WAITING
                 } else if (state.state === 'GUESSING') {
                     const elapsed = Date.now() - state.guessTimerStart;
                     const remaining = Math.max(0, state.guessTimerDuration - elapsed);
