@@ -41,7 +41,8 @@
             wrong: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_8c8b6d1f3f.mp3?filename=wrong-answer-129254.mp3',
             victory: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d7c5a3a3e.mp3?filename=fanfare-6302.mp3',
             buy: 'https://cdn.pixabay.com/download/audio/2022/05/13/audio_8c3e3d3e4f.mp3?filename=cash-register-172293.mp3',
-            warning: 'https://cdn.pixabay.com/download/audio/2023/08/22/audio_9d8e3b3e4f.mp3?filename=alarm-clock-64535.mp3'
+            warning: 'https://cdn.pixabay.com/download/audio/2023/08/22/audio_9d8e3b3e4f.mp3?filename=alarm-clock-64535.mp3',
+            fail: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_8c8b6d1f3f.mp3?filename=wrong-answer-129254.mp3'
         };
 
         function playSound(type) {
@@ -50,11 +51,11 @@
             audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGamePersistentV4';
+        const STATE_KEY = 'colorGamePersistentV6';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
-            return s ? JSON.parse(s) : {playerScore: 0};
+            return s ? JSON.parse(s) : {playerScore: 0, inventory: []};
         }
 
         function setState(state) {
@@ -97,11 +98,11 @@
         }
 
         const shopItems = [
-            {id: 'reveal', name: 'MẮT NHÌN XUYÊN THẤU', desc: 'NHÌN THẤY MÀU ĐÚNG TRONG 10 GIÂY', price: 100000, duration: 300000},
-            {id: 'hint3', name: 'GỢI Ý 3 MÀU SAI', desc: 'LOẠI BỎ 3 MÀU SAI KHỎI BẢNG', price: 50000, duration: 300000},
-            {id: 'extraTime', name: 'THỜI GIAN THÊM', desc: '+3 PHÚT ĐẾM NGƯỢC', price: 40000, duration: 300000},
-            {id: 'halfWrong', name: 'GIẢM NỬA SAI', desc: 'GIẢM 1/2 SỐ LẦN SAI ĐÃ CÓ', price: 35000, duration: 300000},
-            {id: 'doublePoint', name: 'NHÂN ĐÔI ĐIỂM', desc: 'ĐOÁN ĐÚNG LẦN NÀY +20 ĐIỂM', price: 80000, duration: 300000},
+            {id: 'reveal', name: 'MẮT NHÌN XUYÊN THẤU', desc: 'NHÌN THẤY MÀU ĐÚNG TRONG 10 GIÂY', price: 100000},
+            {id: 'hint3', name: 'GỢI Ý 3 MÀU SAI', desc: 'LOẠI BỎ 3 MÀU SAI KHỎI BẢNG', price: 50000},
+            {id: 'extraTime', name: 'THỜI GIAN THÊM', desc: '+3 PHÚT ĐẾM NGƯỢC', price: 40000},
+            {id: 'halfWrong', name: 'GIẢM NỬA SAI', desc: 'GIẢM 1/2 SỐ LẦN SAI ĐÃ CÓ', price: 35000},
+            {id: 'doublePoint', name: 'NHÂN ĐÔI ĐIỂM', desc: 'ĐOÁN ĐÚNG LẦN NÀY +20 ĐIỂM', price: 80000},
         ];
 
         if (!player) {
@@ -209,7 +210,7 @@
 
             const resetBtn = createButton('RESET ĐIỂM', () => {
                 if (confirm('RESET ĐIỂM CỦA BẠN VỀ 0? (KHÔNG THỂ HOÀN TÁC)')) {
-                    const newState = {playerScore: 0};
+                    const newState = {playerScore: 0, inventory: []};
                     setState(newState);
                     updateView();
                     alert('ĐIỂM ĐÃ ĐƯỢC RESET VỀ 0!');
@@ -246,7 +247,6 @@
             guessTimer.style.display = 'NONE';
             document.body.appendChild(guessTimer);
 
-            // ICON Ở ĐẦU VÀ CUỐI CHỮ
             const warningMsg = document.createElement('DIV');
             warningMsg.id = 'WARNING-MSG';
             warningMsg.textContent = '🚨 NHANH LÊN THỜI GIAN SẮP HẾT, HẾT LÀ BẠN THUA ĐÓ! 🚨';
@@ -256,6 +256,11 @@
             const shopModal = document.createElement('DIV');
             shopModal.id = 'SHOP-MODAL';
             document.body.appendChild(shopModal);
+
+            const inventoryBar = document.createElement('DIV');
+            inventoryBar.id = 'INVENTORY-BAR';
+            inventoryBar.style.display = 'NONE';
+            document.body.appendChild(inventoryBar);
 
             createFooter(container);
 
@@ -272,7 +277,7 @@
                 shopModal.style.display = 'BLOCK';
 
                 const title = document.createElement('H2');
-                title.textContent = 'CỬA HÀNG SKILL (THỜI HẠN 5 PHÚT)';
+                title.textContent = 'CỬA HÀNG SKILL';
                 shopModal.appendChild(title);
 
                 const currentPoint = document.createElement('P');
@@ -301,21 +306,21 @@
 
                     const buyBtn = createButton('MUA NGAY', () => {
                         if (state.playerScore < item.price) {
-                            alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ MUA ITEM NÀY!');
+                            playSound('fail');
+                            alert('XIN LỖI BẠN, BẠN KHÔNG ĐỦ ĐIỂM ĐỂ MUA SKILL NÀY. VUI LÒNG CÀY ĐỦ ĐIỂM VÀ MUA LẠI NHÉ');
                             return;
                         }
                         if (confirm(`MUA ${item.name} VỚI ${item.price.toLocaleString()} ĐIỂM?`)) {
                             playSound('buy');
                             const newState = {...state};
                             newState.playerScore -= item.price;
-                            newState.activeSkill = {id: item.id, buyTime: Date.now(), duration: item.duration};
+                            newState.inventory.push(item.id);
                             setState(newState);
-                            alert('MUA THÀNH CÔNG! SKILL ĐÃ KÍCH HOẠT!');
+                            alert('MUA THÀNH CÔNG! SKILL ĐÃ VÀO TÚI ĐỒ!');
                             shopModal.style.display = 'NONE';
                             updateView();
                         }
                     });
-                    if (state.playerScore < item.price) buyBtn.disabled = true;
                     card.appendChild(buyBtn);
 
                     shopModal.appendChild(card);
@@ -325,14 +330,39 @@
                 shopModal.appendChild(closeBtn);
             }
 
+            function showInventory() {
+                const state = getState();
+                inventoryBar.innerHTML = '';
+                inventoryBar.style.display = 'FLEX';
+
+                const title = document.createElement('P');
+                title.textContent = 'TÚI ĐỒ SKILL:';
+                title.style.marginRight = '10PX';
+                inventoryBar.appendChild(title);
+
+                shopItems.forEach(item => {
+                    if (state.inventory.includes(item.id)) {
+                        const useBtn = createButton(item.name, () => {
+                            if (state.activeSkill && state.activeSkill.id === item.id) {
+                                alert('SKILL NÀY ĐÃ ĐƯỢC KÍCH HOẠT RỒI!');
+                                return;
+                            }
+                            const newState = {...state};
+                            newState.activeSkill = {id: item.id, buyTime: Date.now()};
+                            newState.inventory = newState.inventory.filter(i => i !== item.id); // dùng 1 lần
+                            setState(newState);
+                            alert(`ĐÃ KÍCH HOẠT ${item.name}!`);
+                            updateView();
+                        });
+                        useBtn.classList.add('INVENTORY-BTN');
+                        inventoryBar.appendChild(useBtn);
+                    }
+                });
+            }
+
             function applySkill(state) {
                 if (!state.activeSkill) return false;
-                const elapsed = Date.now() - state.activeSkill.buyTime;
-                if (elapsed > state.activeSkill.duration) {
-                    delete state.activeSkill;
-                    setState(state);
-                    return false;
-                }
+                // Không cần duration nữa vì dùng 1 lần
                 return true;
             }
 
@@ -403,7 +433,7 @@
                 mainView.appendChild(msg);
 
                 const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
-                    const persistentState = {playerScore: getState().playerScore};
+                    const persistentState = {playerScore: getState().playerScore, inventory: getState().inventory || []};
                     setState(persistentState);
                     botSetColorAndWait();
                 });
@@ -426,6 +456,7 @@
                     timerStart: Date.now(),
                     timerDuration: duration,
                     playerScore: state.playerScore,
+                    inventory: state.inventory || [],
                     wrongGuesses: 0
                 };
                 setState(newState);
@@ -439,9 +470,14 @@
                 overlay.style.display = 'NONE';
                 guessTimer.style.display = 'NONE';
                 warningMsg.style.display = 'NONE';
+                inventoryBar.style.display = 'NONE';
                 hasWarned = false;
 
                 applySkill(state);
+
+                if (state.inventory && state.inventory.length > 0 && state.state === 'GUESSING') {
+                    showInventory();
+                }
 
                 if (state.state === 'WAITING') {
                     overlay.style.display = 'FLEX';
