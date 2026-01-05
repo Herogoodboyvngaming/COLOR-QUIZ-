@@ -51,7 +51,7 @@
             audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGamePersistentV6';
+        const STATE_KEY = 'colorGamePersistentV7';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
@@ -106,6 +106,7 @@
         ];
 
         if (!player) {
+            // TRANG CHỦ (giữ nguyên)
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -272,6 +273,7 @@
             }
 
             function showShop() {
+                // (giữ nguyên như trước)
                 const state = getState();
                 shopModal.innerHTML = '';
                 shopModal.style.display = 'BLOCK';
@@ -348,8 +350,8 @@
                                 return;
                             }
                             const newState = {...state};
-                            newState.activeSkill = {id: item.id, buyTime: Date.now()};
-                            newState.inventory = newState.inventory.filter(i => i !== item.id); // dùng 1 lần
+                            newState.activeSkill = {id: item.id};
+                            newState.inventory = newState.inventory.filter(i => i !== item.id);
                             setState(newState);
                             alert(`ĐÃ KÍCH HOẠT ${item.name}!`);
                             updateView();
@@ -362,11 +364,11 @@
 
             function applySkill(state) {
                 if (!state.activeSkill) return false;
-                // Không cần duration nữa vì dùng 1 lần
                 return true;
             }
 
             function createPalette(state) {
+                // (giữ nguyên)
                 const grid = document.createElement('DIV');
                 grid.classList.add('COLOR-GRID');
 
@@ -426,6 +428,7 @@
             }
 
             function showResult(correct, bonus = 10) {
+                // (giữ nguyên)
                 mainView.innerHTML = '';
                 const msg = document.createElement('H2');
                 msg.textContent = correct ? `CHÚC MỪNG! +${bonus} ĐIỂM 🎉🎉` : 'HẾT GIỜ HOẶC SAI QUÁ 3 LẦN - BẠN THUA RỒI!';
@@ -443,18 +446,14 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                let duration = Math.floor(Math.random() * 540000) + 60000;
+                // THAY ĐỔI: THỜI GIAN ĐẶT MÀU NGẪU NHIÊN 1-5 PHÚT
+                let waitDuration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
                 const state = getState();
-                if (state.activeSkill && state.activeSkill.id === 'extraTime' && applySkill(state)) {
-                    duration += 180000;
-                    delete state.activeSkill;
-                    setState(state);
-                }
                 const newState = {
                     secretColor: secret,
                     state: 'WAITING',
                     timerStart: Date.now(),
-                    timerDuration: duration,
+                    timerDuration: waitDuration,
                     playerScore: state.playerScore,
                     inventory: state.inventory || [],
                     wrongGuesses: 0
@@ -521,9 +520,12 @@
                     const elapsed = Date.now() - state.timerStart;
                     const remaining = state.timerDuration - elapsed;
                     if (remaining <= 0) {
+                        // CHUYỂN SANG GIAI ĐOẠN ĐOÁN VỚI THỜI GIAN RIÊNG 1-10 PHÚT
+                        const guessDuration = Math.floor(Math.random() * 540000) + 60000; // 1-10 phút
                         const newState = {...state};
                         newState.state = 'GUESSING';
                         newState.guessTimerStart = Date.now();
+                        newState.guessTimerDuration = guessDuration;
                         setState(newState);
                         updateView();
                     } else {
@@ -533,7 +535,7 @@
                     }
                 } else if (state.state === 'GUESSING') {
                     const elapsed = Date.now() - state.guessTimerStart;
-                    const remaining = Math.max(0, state.timerDuration - elapsed);
+                    const remaining = Math.max(0, state.guessTimerDuration - elapsed);
                     const totalSeconds = Math.floor(remaining / 1000);
 
                     const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
