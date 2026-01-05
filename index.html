@@ -36,38 +36,20 @@
             {name: 'CORAL', hex: '#FF7F50'},
         ];
 
-        let audioCtx = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.resume();
-            }
-        }
+        // Âm thanh thật từ nguồn miễn phí
+        const SOUNDS = {
+            correct: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_4e79e3c6d3.mp3?filename=success-1-6297.mp3',
+            wrong: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_8c8b6d1f3f.mp3?filename=wrong-answer-129254.mp3',
+            victory: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d7c5a3a3e.mp3?filename=fanfare-6302.mp3'
+        };
 
         function playSound(type) {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            osc.type = 'sine';
-            const gain = audioCtx.createGain();
-            gain.gain.value = 0.3;
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            if (type === 'correct') {
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(900, audioCtx.currentTime + 0.1);
-                osc.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.2);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.7);
-            } else {
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(200, audioCtx.currentTime + 0.2);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
-            }
+            const audio = new Audio(SOUNDS[type]);
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGameBotV1';
+        const STATE_KEY = 'colorGameBotV4';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
@@ -90,10 +72,7 @@
             const btn = document.createElement('BUTTON');
             btn.textContent = text;
             btn.classList.add('BTN');
-            btn.onclick = () => {
-                initAudio();
-                onclick();
-            };
+            btn.onclick = onclick;
             return btn;
         }
 
@@ -138,7 +117,7 @@
             main.classList.add('HOME-MAIN');
 
             const info = document.createElement('P');
-            info.textContent = 'PLAYER 1 LÀ MÁY (BOT) - BẠN SẼ LÀ PLAYER 2 ĐOÁN MÀU!';
+            info.textContent = 'PLAYER 1 LÀ BOT - BẠN LÀ NGƯỜI ĐOÁN MÀU!';
             info.style.fontWeight = 'BOLD';
             info.style.color = '#FFFF00';
             info.style.fontSize = '2EM';
@@ -187,7 +166,7 @@
 
             document.body.appendChild(modal);
         } else if (player === 2) {
-            // PLAYER 2 - NGƯỜI CHƠI THẬT
+            // PLAYER 2 - NGƯỜI CHƠI
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -262,17 +241,26 @@
                         const state = getState();
                         if (c.hex === state.secretColor) {
                             playSound('correct');
+                            playSound('victory');
                             const newState = {...state};
                             newState.playerScore += 10;
                             setState(newState);
                             showResult(true);
                         } else {
                             playSound('wrong');
-                            const newState = {...state};
-                            newState.playerScore -= 10;
-                            newState.wrongGuesses += 1;
-                            setState(newState);
-                            alert('SAI RỒI!!! -10 ĐIỂM 😭');
+                            const currentScore = state.playerScore || 0;
+                            if (currentScore > 0) {
+                                const newState = {...state};
+                                newState.playerScore -= 10;
+                                newState.wrongGuesses += 1;
+                                setState(newState);
+                                alert('SAI RỒI!!! -10 ĐIỂM 😭');
+                            } else {
+                                const newState = {...state};
+                                newState.wrongGuesses += 1;
+                                setState(newState);
+                                alert('SAI RỒI!!! BẠN KHÔNG CÓ ĐIỂM NÊN KHÔNG BỊ TRỪ 😅');
+                            }
                             updateView();
                         }
                     };
@@ -284,7 +272,7 @@
             function showResult(correct) {
                 mainView.innerHTML = '';
                 const msg = document.createElement('H2');
-                msg.textContent = correct ? 'CHÚC MỪNG! BẠN ĐOÁN ĐÚNG RỒI +10 ĐIỂM 🎉' : 'BẠN ĐÃ TỪ BỎ HOẶC SAI QUÁ NHIỀU';
+                msg.textContent = correct ? 'CHÚC MỪNG! BẠN ĐOÁN ĐÚNG RỒI +10 ĐIỂM 🎉🎉' : 'BẠN ĐÃ SAI QUÁ 3 LẦN HOẶC TỪ BỎ';
                 msg.style.color = correct ? '#00FF00' : '#FF4444';
                 mainView.appendChild(msg);
 
@@ -298,7 +286,7 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                const duration = Math.floor(Math.random() * 240000) + 60000; // 1-5 phút
+                const duration = Math.floor(Math.random() * 240000) + 60000;
                 setState({
                     secretColor: secret,
                     state: 'WAITING',
@@ -317,7 +305,7 @@
                 mainView.innerHTML = '';
                 overlay.style.display = 'NONE';
 
-                if (!state || state.state === 'GUESSING' || state.wrongGuesses >= 3) {
+                if (!state || state.state === 'GUESSING' || (state.wrongGuesses >= 3)) {
                     if (state && state.wrongGuesses >= 3) {
                         showResult(false);
                         return;
@@ -331,7 +319,12 @@
                     mainView.appendChild(createPalette());
 
                     const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
-                        if (confirm('TỪ BỎ THẬT À?')) {
+                        const currentScore = (getState()?.playerScore || 0);
+                        if (currentScore < 10) {
+                            alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ TỪ BỎ');
+                            return;
+                        }
+                        if (confirm('BẠN CHẮC CHẮN MUỐN TỪ BỎ? -10 ĐIỂM NHÉ')) {
                             const newState = {...getState()};
                             newState.playerScore -= 10;
                             setState(newState);
@@ -363,7 +356,6 @@
                 }
             }, 500);
 
-            // Bắt đầu lượt đầu
             if (!getState()) {
                 botSetColorAndWait();
             } else {
