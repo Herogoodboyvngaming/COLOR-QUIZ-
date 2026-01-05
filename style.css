@@ -116,7 +116,6 @@ H1 {
     text-align: center;
 }
 
-/* FIX HOÀN TOÀN CHO iOS SAFARI - DÙNG FLEX CHO BẢNG MÀU */
 .COLOR-WRAPPER {
     display: flex;
     flex-wrap: wrap;
