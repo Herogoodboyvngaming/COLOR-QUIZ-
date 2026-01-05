@@ -16,7 +16,7 @@
         <section id="home">
             <div class="welcome-card">
                 <h2>CHÀO MỪNG ĐẾN VỚI TRÒ CHƠI ĐỐ MÀU VIRAL</h2>
-                <p>PLAYER 1: NGƯỜI ĐẶT MÀU BÍ MẬT<br>PLAYER 2: NGƯỜI ĐOÁN MÀU BẰNG CÁCH BẤM NÚT MÀU</p>
+                <p>PLAYER 1: NGƯỜI ĐẶT MÀU BÍ MẬT<br>PLAYER 2: NGƯỜI ĐOÁN MÀU BẰNG NÚT MÀU SẮC</p>
                 <button class="big-btn start-btn" onclick="confirmStart()">BẮT ĐẦU CHƠI</button>
             </div>
         </section>
@@ -27,10 +27,10 @@
             </div>
 
             <div id="scoreboard" class="scoreboard">
-                <h2>BẢNG ĐIỂM RIÊNG BIỆT</h2>
+                <h2>BẢNG ĐIỂM</h2>
                 <p>ĐIỂM PLAYER 1: <span id="score1">0</span></p>
                 <p>ĐIỂM PLAYER 2: <span id="score2">0</span></p>
-                <p>LẦN ĐOÁN HIỆN TẠI: <span id="attempts">0</span>/3</p>
+                <p>LẦN ĐOÁN: <span id="attempts">0</span>/3</p>
             </div>
 
             <div id="player1" class="player-panel">
@@ -49,12 +49,12 @@
                     <option value="hồng">HỒNG</option>
                     <option value="nâu">NÂU</option>
                 </select>
-                <button class="action-btn" onclick="player1SetColor()">ĐẶT MÀU</button>
+                <button class="action-btn" onclick="playerSetColor()">ĐẶT MÀU</button>
             </div>
 
             <div id="player2" class="player-panel">
                 <h2>PLAYER 2 - ĐOÁN MÀU</h2>
-                <p id="readyText" style="display:none;">BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?</p>
+                <p id="readyText" style="display:none; font-size:2rem; color:#2ecc71;">BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?</p>
                 <div id="colorButtons" class="color-buttons"></div>
                 <p id="feedback" class="feedback"></p>
                 <button id="playAgainBtn" class="control-btn restart" style="display:none;" onclick="restartRoundConfirm()">CHƠI LẠI VÒNG NÀY</button>
@@ -62,7 +62,7 @@
 
             <div id="controls">
                 <button class="control-btn restart" onclick="restartGameConfirm()">RESTART TOÀN BỘ</button>
-                <button class="control-btn forfeit" onclick="forfeit()">TỪ BỎ (-10 ĐIỂM)</button>
+                <button class="control-btn forfeit" onclick="forfeitConfirm()">TỪ BỎ (-10 ĐIỂM)</button>
                 <button class="control-btn reset" onclick="resetScoresConfirm()">RESET ĐIỂM</button>
                 <button class="control-btn home" onclick="backToHome()">TRỞ VỀ TRANG CHỦ</button>
             </div>
@@ -90,16 +90,16 @@
         </div>
     </div>
 
-    <audio id="clickSound" src="https://www.soundjay.com/buttons/button-09.mp3"></audio>
-    <audio id="correctSound" src="https://www.soundjay.com/buttons/button-3.mp3"></audio>
-    <audio id="wrongSound" src="https://www.soundjay.com/buttons/button-16.mp3"></audio>
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/button-3.mp3"></audio>
+    <audio id="correctSound" src="https://www.orangefreesounds.com/wp-content/uploads/2014/10/Correct-answer.mp3"></audio>
+    <audio id="wrongSound" src="https://www.orangefreesounds.com/wp-content/uploads/2016/11/Wrong-answer-sound-effect.mp3"></audio>
 
     <script>
         let selectedColor = '';
         let score1 = 0;
         let score2 = 0;
         let attempts = 0;
-        let currentSetter = 'player1'; // BẮT ĐẦU PLAYER 1 ĐẶT, SAU ĐỔI LƯỢT
+        let currentSetter = 'player1'; // AI LÚC NÀO CŨNG LÀ PLAYER 1 ĐẶT HOẶC ĐOÁN
 
         const colors = ['đỏ', 'xanh dương', 'xanh lá', 'vàng', 'đen', 'trắng', 'tím', 'cam', 'hồng', 'nâu'];
         const colorNames = ['ĐỎ', 'XANH DƯƠNG', 'XANH LÁ', 'VÀNG', 'ĐEN', 'TRẮNG', 'TÍM', 'CAM', 'HỒNG', 'NÂU'];
@@ -110,29 +110,29 @@
 
         function playSound(sound) {
             sound.currentTime = 0;
-            sound.play();
+            sound.play().catch(() => {}); // TRÁNH LỖI NẾU TRÌNH DUYỆT CHẶN
         }
 
         function confirmStart() {
-            if (confirm('BẠN XÁC NHẬN CHƠI CHỨ?')) {
-                document.getElementById('home').style.display = 'none';
-                document.getElementById('game').style.display = 'flex';
-                document.getElementById('blackScreen').style.display = 'block';
-                document.getElementById('player1').style.display = 'block';
-                document.getElementById('player2').style.display = 'none';
-                document.getElementById('readyText').style.display = 'none';
-                createColorButtons();
-                blinkWaiting();
+            if (confirm('BẠN XÁC NHẬN MUỐN CHƠI CHỨ?')) {
+                startNewRound();
             }
         }
 
-        function blinkWaiting() {
-            const text = document.getElementById('waitingText');
-            let visible = true;
-            setInterval(() => {
-                text.style.opacity = visible ? '1' : '0';
-                visible = !visible;
-            }, 800);
+        function startNewRound() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('game').style.display = 'flex';
+            document.getElementById('blackScreen').style.display = 'block';
+            document.getElementById('waitingText').style.display = 'block';
+            document.getElementById('player1').style.display = 'block';
+            document.getElementById('player2').style.display = 'none';
+            document.getElementById('readyText').style.display = 'none';
+            document.getElementById('playAgainBtn').style.display = 'none';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('colorSelect').value = '';
+            attempts = 0;
+            updateAttempts();
+            createColorButtons();
         }
 
         function createColorButtons() {
@@ -142,115 +142,105 @@
                 const btn = document.createElement('button');
                 btn.className = 'color-btn';
                 btn.textContent = colorNames[index];
-                btn.onclick = () => guessColor(color);
+                btn.style.backgroundColor = color; // ĐỂ MÀU THẬT
+                btn.onclick = () => playerGuess(color);
                 container.appendChild(btn);
             });
         }
 
-        function player1SetColor() {
+        function playerSetColor() {
             playSound(clickSound);
-            selectedColor = document.getElementById('colorSelect').value.toLowerCase();
+            selectedColor = document.getElementById('colorSelect').value;
             if (selectedColor) {
-                alert('MÀU BÍ MẬT ĐÃ ĐẶT! BÂY GIỜ ĐỔI CHO PLAYER 2 ĐOÁN');
+                // CHUYỂN SANG PLAYER 2 ĐOÁN
                 document.getElementById('blackScreen').style.display = 'none';
                 document.getElementById('player1').style.display = 'none';
                 document.getElementById('player2').style.display = 'block';
                 document.getElementById('readyText').style.display = 'block';
-                attempts = 0;
-                updateAttempts();
             } else {
-                alert('VUI LÒNG CHỌN MÀU!');
+                alert('VUI LÒNG CHỌN MÀU BÍ MẬT!');
             }
         }
 
-        function guessColor(guess) {
+        function playerGuess(guess) {
             playSound(clickSound);
             attempts++;
             updateAttempts();
             const feedback = document.getElementById('feedback');
+
             if (guess === selectedColor) {
                 playSound(correctSound);
                 feedback.textContent = 'OH THẾ LÀ BẠN CHỌN ĐÚNG MÀU RỒI + CHO BẠN 20 ĐIỂM NÈ HIHI';
                 feedback.style.color = '#2ecc71';
                 score2 += 20;
-                switchRoles();
+                updateScores();
+                setTimeout(aiTurn, 2000); // SAU 2 GIÂY AI ĐOÁN
             } else {
                 playSound(wrongSound);
                 feedback.textContent = 'TẠI SAO BẠN LẠI CHỌN SAI ??? -10 ĐIỂM';
                 feedback.style.color = '#e74c3c';
                 score2 -= 10;
+                updateScores();
                 if (attempts >= 3) {
                     document.getElementById('playAgainBtn').style.display = 'block';
                 }
             }
-            updateScores();
         }
 
-        function switchRoles() {
+        function aiTurn() {
+            // AI (PLAYER 1) ĐOÁN NGẪU NHIÊN
+            const aiGuess = colors[Math.floor(Math.random() * colors.length)];
+            if (aiGuess === selectedColor) {
+                alert('PLAYER 1 (MÁY) ĐOÁN ĐÚNG! TRỪ PLAYER 2 15 ĐIỂM');
+                score2 -= 15;
+            } else {
+                alert('PLAYER 1 (MÁY) ĐOÁN SAI! +10 ĐIỂM CHO PLAYER 2');
+                score2 += 10;
+            }
             updateScores();
-            alert('ĐÚNG RỒI! BÂY GIỜ ĐỔI LƯỢT - PLAYER 2 ĐẶT MÀU, PLAYER 1 SẼ ĐOÁN (TỰ ĐỘNG)');
-            // TỰ ĐỘNG PLAYER 1 ĐOÁN (GIẢ LẬP MÁY)
-            document.getElementById('player2').style.display = 'none';
-            document.getElementById('blackScreen').style.display = 'block';
-            document.getElementById('player1').style.display = 'block';
-            // GIẢ LẬP PLAYER 1 ĐOÁN NGẪU NHIÊN
-            setTimeout(() => {
-                const randomGuess = colors[Math.floor(Math.random() * colors.length)];
-                if (randomGuess === selectedColor) {
-                    alert('PLAYER 1 (MÁY) CHỌN ĐÚNG MÀU! TRỪ PLAYER 2 10 ĐIỂM');
-                    score2 -= 10;
-                } else {
-                    alert('PLAYER 1 (MÁY) CHỌN SAI! +10 ĐIỂM CHO PLAYER 2');
-                    score2 += 10;
-                }
-                updateScores();
-                restartRound();
-            }, 3000);
-        }
-
-        function restartRound() {
-            selectedColor = '';
-            attempts = 0;
-            updateAttempts();
-            document.getElementById('feedback').textContent = '';
-            document.getElementById('playAgainBtn').style.display = 'none';
-            document.getElementById('colorSelect').value = '';
+            if (confirm('KẾT THÚC VÒNG! BẠN MUỐN CHƠI VÒNG MỚI?')) {
+                startNewRound();
+            } else {
+                backToHome();
+            }
         }
 
         function restartRoundConfirm() {
             if (confirm('BẠN MUỐN CHƠI LẠI VÒNG NÀY?')) {
-                restartRound();
+                selectedColor = '';
+                attempts = 0;
+                updateAttempts();
+                document.getElementById('feedback').textContent = '';
+                document.getElementById('playAgainBtn').style.display = 'none';
+                startNewRound();
             }
         }
 
         function restartGameConfirm() {
-            if (confirm('BẠN MUỐN RESTART TOÀN BỘ TRÒ CHƠI?')) {
-                score1 = 0;
-                score2 = 0;
-                restartRound();
+            if (confirm('RESTART TOÀN BỘ TRÒ CHƠI? ĐIỂM SẼ GIỮ NGUYÊN')) {
+                startNewRound();
+            }
+        }
+
+        function forfeitConfirm() {
+            if (confirm('BẠN CHẮC CHẮN TỪ BỎ? -10 ĐIỂM')) {
+                score2 -= 10;
+                updateScores();
                 backToHome();
             }
         }
 
         function resetScoresConfirm() {
-            if (confirm('BẠN MUỐN RESET ĐIỂM VỀ 0?')) {
+            if (confirm('RESET TẤT CẢ ĐIỂM VỀ 0?')) {
                 score1 = 0;
                 score2 = 0;
                 updateScores();
             }
         }
 
-        function forfeit() {
-            score2 -= 10;
-            updateScores();
-            alert('TỪ BỎ! -10 ĐIỂM');
-            backToHome();
-        }
-
         function backToHome() {
             document.getElementById('game').style.display = 'none';
             document.getElementById('home').style.display = 'block';
-            restartRound();
         }
 
         function updateScores() {
@@ -262,7 +252,6 @@
             document.getElementById('attempts').textContent = attempts;
         }
 
-        // CÁC HÀM MODAL BÁO LỖI GIỮ NGUYÊN
         function openReportModal() { document.getElementById('reportModal').style.display = 'block'; }
         function closeReportModal() { document.getElementById('reportModal').style.display = 'none'; }
         function submitReport() {
@@ -273,9 +262,12 @@
                 alert('BẠN BẮT BUỘC PHẢI NHẬP ĐẦY ĐỦ MỚI CÓ THỂ GỬI ĐƯỢC');
             } else {
                 alert('CẢM ƠN! BÁO CÁO ĐÃ GỬI (GIẢ LẬP)');
+                document.getElementById('info').value = '';
+                document.getElementById('gmail').value = '';
+                document.getElementById('message').value = '';
                 closeReportModal();
             }
         }
     </script>
 </body>
-  </html>
+</html>
