@@ -51,7 +51,7 @@
             audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGamePersistentV14';
+        const STATE_KEY = 'COLORGAME2026';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
@@ -106,7 +106,6 @@
         ];
 
         if (!player) {
-            // TRANG CHỦ GIỮ NGUYÊN
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -268,7 +267,196 @@
 
             let hasWarned = false;
 
-            // CÁC HÀM GIỮ NGUYÊN
+            function updateScores() {
+                const state = getState();
+                document.getElementById('PLAYER-SCORE').textContent = `ĐIỂM CỦA BẠN: ${state.playerScore.toLocaleString()}`;
+            }
+
+            function showShop() {
+                const state = getState();
+                shopModal.innerHTML = '';
+                shopModal.style.display = 'BLOCK';
+
+                const title = document.createElement('H2');
+                title.textContent = 'CỬA HÀNG SKILL';
+                shopModal.appendChild(title);
+
+                const currentPoint = document.createElement('P');
+                currentPoint.textContent = `ĐIỂM HIỆN TẠI: ${state.playerScore.toLocaleString()}`;
+                currentPoint.style.fontSize = '1.8EM';
+                currentPoint.style.color = '#FFFF00';
+                shopModal.appendChild(currentPoint);
+
+                shopItems.forEach(item => {
+                    const card = document.createElement('DIV');
+                    card.classList.add('SHOP-ITEM');
+
+                    const name = document.createElement('H3');
+                    name.textContent = item.name;
+                    card.appendChild(name);
+
+                    const desc = document.createElement('P');
+                    desc.textContent = item.desc;
+                    card.appendChild(desc);
+
+                    const price = document.createElement('P');
+                    price.textContent = `GIÁ: ${item.price.toLocaleString()} ĐIỂM`;
+                    price.style.color = '#FF4444';
+                    price.style.fontWeight = 'BOLD';
+                    card.appendChild(price);
+
+                    const buyBtn = createButton('MUA NGAY', () => {
+                        if (state.playerScore < item.price) {
+                            playSound('fail');
+                            alert('XIN LỖI BẠN, BẠN KHÔNG ĐỦ ĐIỂM ĐỂ MUA SKILL NÀY. VUI LÒNG CÀY ĐỦ ĐIỂM VÀ MUA LẠI NHÉ');
+                            return;
+                        }
+                        if (confirm(`MUA ${item.name} VỚI ${item.price.toLocaleString()} ĐIỂM?`)) {
+                            playSound('buy');
+                            const newState = {...state};
+                            newState.playerScore -= item.price;
+                            newState.inventory.push(item.id);
+                            setState(newState);
+                            alert('MUA THÀNH CÔNG! SKILL ĐÃ VÀO TÚI ĐỒ!');
+                            shopModal.style.display = 'NONE';
+                            updateView();
+                        }
+                    });
+                    card.appendChild(buyBtn);
+
+                    shopModal.appendChild(card);
+                });
+
+                const closeBtn = createButton('ĐÓNG CỬA HÀNG', () => shopModal.style.display = 'NONE');
+                shopModal.appendChild(closeBtn);
+            }
+
+            function showInventory() {
+                const state = getState();
+                inventoryBar.innerHTML = '';
+                inventoryBar.style.display = 'FLEX';
+
+                const title = document.createElement('P');
+                title.textContent = 'TÚI ĐỒ SKILL:';
+                title.style.marginRight = '10PX';
+                inventoryBar.appendChild(title);
+
+                shopItems.forEach(item => {
+                    if (state.inventory.includes(item.id)) {
+                        const useBtn = createButton(item.name, () => {
+                            if (state.activeSkill && state.activeSkill.id === item.id) {
+                                alert('SKILL NÀY ĐÃ ĐƯỢC KÍCH HOẠT RỒI!');
+                                return;
+                            }
+                            const newState = {...state};
+                            newState.activeSkill = {id: item.id};
+                            newState.inventory = newState.inventory.filter(i => i !== item.id);
+                            setState(newState);
+                            alert(`ĐÃ KÍCH HOẠT ${item.name}!`);
+                            updateView();
+                        });
+                        useBtn.classList.add('INVENTORY-BTN');
+                        inventoryBar.appendChild(useBtn);
+                    }
+                });
+            }
+
+            function applySkill(state) {
+                if (!state.activeSkill) return false;
+                return true;
+            }
+
+            function createPalette(state) {
+                const wrapper = document.createElement('DIV');
+                wrapper.classList.add('COLOR-WRAPPER');
+
+                let availableColors = colors.slice();
+                if (state.activeSkill && state.activeSkill.id === 'hint3' && applySkill(state)) {
+                    let wrongColors = colors.filter(c => c.hex !== state.secretColor);
+                    wrongColors.sort(() => Math.random() - 0.5);
+                    const toRemove = wrongColors.slice(0, 3).map(c => c.hex);
+                    availableColors = colors.filter(c => !toRemove.includes(c.hex));
+                }
+
+                availableColors.forEach(c => {
+                    const btn = document.createElement('BUTTON');
+                    btn.classList.add('COLOR-BTN');
+                    btn.style.backgroundColor = c.hex;
+                    btn.style.color = getTextColor(c.hex);
+                    btn.textContent = c.name;
+
+                    if (state.activeSkill && state.activeSkill.id === 'reveal' && applySkill(state)) {
+                        if (c.hex === state.secretColor) {
+                            btn.classList.add('REVEAL');
+                        }
+                    }
+
+                    btn.onclick = () => {
+                        if (c.hex === state.secretColor) {
+                            playSound('correct');
+                            playSound('victory');
+                            let bonus = 10;
+                            if (state.activeSkill && state.activeSkill.id === 'doublePoint' && applySkill(state)) bonus = 20;
+                            const newState = {...state};
+                            newState.playerScore += bonus;
+                            delete newState.activeSkill;
+                            setState(newState);
+                            showResult(true, bonus);
+                        } else {
+                            playSound('wrong');
+                            const currentScore = state.playerScore || 0;
+                            if (currentScore > 0) {
+                                const newState = {...state};
+                                newState.playerScore -= 10;
+                                newState.wrongGuesses += 1;
+                                setState(newState);
+                                alert('SAI RỒI!!! -10 ĐIỂM 😭');
+                            } else {
+                                const newState = {...state};
+                                newState.wrongGuesses += 1;
+                                setState(newState);
+                                alert('SAI RỒI!!! BẠN KHÔNG CÓ ĐIỂM NÊN KHÔNG BỊ TRỪ 😅');
+                            }
+                            updateView();
+                        }
+                    };
+                    wrapper.appendChild(btn);
+                });
+                return wrapper;
+            }
+
+            function showResult(correct, bonus = 10) {
+                mainView.innerHTML = '';
+                const msg = document.createElement('H2');
+                msg.textContent = correct ? `CHÚC MỪNG! +${bonus} ĐIỂM 🎉🎉` : 'HẾT GIỜ HOẶC SAI QUÁ 3 LẦN - BẠN THUA RỒI!';
+                msg.style.color = correct ? '#00FF00' : '#FF4444';
+                mainView.appendChild(msg);
+
+                const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
+                    const persistentState = {playerScore: getState().playerScore, inventory: getState().inventory || []};
+                    setState(persistentState);
+                    botSetColorAndWait();
+                });
+                nextBtn.classList.add('LARGE');
+                mainView.appendChild(nextBtn);
+            }
+
+            function botSetColorAndWait() {
+                const secret = colors[Math.floor(Math.random() * colors.length)].hex;
+                let waitDuration = Math.floor(Math.random() * 240000) + 60000;
+                const state = getState();
+                const newState = {
+                    secretColor: secret,
+                    state: 'WAITING',
+                    timerStart: Date.now(),
+                    timerDuration: waitDuration,
+                    playerScore: state.playerScore,
+                    inventory: state.inventory || [],
+                    wrongGuesses: 0
+                };
+                setState(newState);
+                updateView();
+            }
 
             function updateView() {
                 updateScores();
