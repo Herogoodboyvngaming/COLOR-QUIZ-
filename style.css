@@ -1,4 +1,4 @@
-/* style.css - GIỮ NGUYÊN NHƯ PHIÊN BẢN TRƯỚC (không thay đổi) */
+/* style.css - HOÀN HẢO CHO TẤT CẢ THIẾT BỊ: PC, ANDROID, iOS, MAC... */
 body {
     margin: 0;
     padding: 0;
@@ -10,6 +10,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    -webkit-overflow-scrolling: touch; /* Mượt trên iOS */
+    overflow-x: hidden;
 }
 
 @keyframes gradient {
@@ -22,77 +24,77 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     flex: 1;
-    padding: 10px;
+    padding: 8px;
     box-sizing: border-box;
 }
 
 H1 {
     font-family: 'Fredoka One', cursive;
-    font-size: clamp(2.5em, 8vw, 5em);
+    font-size: clamp(2.2em, 7vw, 4.5em);
     text-align: CENTER;
-    margin: 15px 0;
-    text-shadow: 4px 4px 10px rgba(0,0,0,0.6);
+    margin: 12px 0;
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
     color: #FFFF00;
 }
 
 .SUBTITLE {
-    font-size: clamp(1em, 4vw, 1.6em);
+    font-size: clamp(0.9em, 3.5vw, 1.5em);
     text-align: CENTER;
-    margin: 10px auto;
-    line-height: 1.5;
+    margin: 8px auto;
+    line-height: 1.4;
 }
 
 .HOME-MAIN {
     text-align: CENTER;
-    padding: 20px 10px;
+    padding: 15px 8px;
 }
 
 .BTN {
-    padding: clamp(10px, 4vw, 18px) clamp(25px, 8vw, 40px);
-    margin: 10px;
-    font-size: clamp(1.3em, 5vw, 1.8em);
+    padding: clamp(8px, 3.5vw, 16px) clamp(20px, 7vw, 35px);
+    margin: 8px;
+    font-size: clamp(1.2em, 4.5vw, 1.7em);
     background: linear-gradient(#667eea, #764ba2);
     color: #fff;
     border: NONE;
-    border-radius: 50px;
+    border-radius: 45px;
     cursor: POINTER;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.4);
     transition: all 0.3s;
     font-weight: BOLD;
-    width: 90%;
-    max-width: 400px;
+    width: 92%;
+    max-width: 380px;
+    touch-action: manipulation; /* Tốt hơn trên mobile */
 }
 
-.BTN:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+.BTN:active {
+    transform: scale(0.98);
 }
 
 .BTN.LARGE {
-    padding: clamp(18px, 6vw, 30px) clamp(35px, 10vw, 60px);
-    font-size: clamp(1.6em, 6vw, 2.5em);
+    padding: clamp(16px, 5.5vw, 28px) clamp(30px, 9vw, 55px);
+    font-size: clamp(1.5em, 5.5vw, 2.3em);
 }
 
 .GAME-HEADER {
     display: FLEX;
     flex-direction: COLUMN;
     align-items: CENTER;
-    gap: 10px;
-    padding: 10px;
+    gap: 8px;
+    padding: 8px;
 }
 
 .SHOP-BTN {
     background: linear-gradient(#ff7e5f, #feb47b);
-    width: 90%;
-    max-width: 400px;
+    width: 92%;
+    max-width: 380px;
 }
 
 #SCORE-BOARD {
     background: rgba(0,0,0,0.4);
-    padding: 15px;
-    border-radius: 25px;
-    margin: 15px 0;
-    font-size: clamp(1.8em, 5vw, 2.8em);
+    padding: 12px;
+    border-radius: 22px;
+    margin: 12px 0;
+    font-size: clamp(1.6em, 4.5vw, 2.6em);
     font-weight: BOLD;
     text-align: CENTER;
     text-shadow: 2px 2px 5px #000;
@@ -100,44 +102,46 @@ H1 {
 
 #MAIN-VIEW {
     text-align: CENTER;
-    padding: 15px;
+    padding: 12px;
     flex: 1;
     overflow-y: AUTO;
+    -webkit-overflow-scrolling: touch;
 }
 
 .COLOR-GRID {
     display: GRID;
-    grid-template-columns: REPEAT(AUTO-FIT, MINMAX(110px, 1fr));
-    gap: 12px;
-    margin: 20px 0;
-    padding: 0 10px;
+    grid-template-columns: REPEAT(AUTO-FIT, MINMAX(100px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+    padding: 0 5px;
 }
 
 .COLOR-BTN {
     width: 100%;
-    height: clamp(90px, 22vw, 140px);
-    border-radius: 20px;
-    border: 5px solid #fff;
-    font-size: clamp(0.9em, 3vw, 1.3em);
+    height: clamp(80px, 20vw, 130px);
+    border-radius: 18px;
+    border: 4px solid #fff;
+    font-size: clamp(0.85em, 2.8vw, 1.2em);
     font-weight: BOLD;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
     transition: all 0.3s;
+    touch-action: manipulation;
 }
 
-.COLOR-BTN:hover {
-    transform: scale(1.1);
+.COLOR-BTN:active {
+    transform: scale(0.95);
 }
 
 .COLOR-BTN.REVEAL {
-    border: 8px solid #00FF00;
-    box-shadow: 0 0 30px #00FF00;
+    border: 7px solid #00FF00;
+    box-shadow: 0 0 28px #00FF00;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0% { box-shadow: 0 0 30px #00FF00; }
-    50% { box-shadow: 0 0 50px #00FF00; }
-    100% { box-shadow: 0 0 30px #00FF00; }
+    0% { box-shadow: 0 0 28px #00FF00; }
+    50% { box-shadow: 0 0 45px #00FF00; }
+    100% { box-shadow: 0 0 28px #00FF00; }
 }
 
 #OVERLAY {
@@ -150,69 +154,69 @@ H1 {
     justify-content: CENTER;
     align-items: CENTER;
     z-index: 100;
-    font-size: clamp(1.8em, 6vw, 3em);
+    font-size: clamp(1.6em, 5.5vw, 2.8em);
 }
 
-#TIMER {
-    font-size: clamp(4em, 15vw, 8em);
+#WAIT-TIMER {
+    font-size: clamp(3.5em, 14vw, 7.5em);
     font-weight: BOLD;
     color: #FF4444;
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 #GUESS-TIMER {
     position: FIXED;
-    top: 80px;
+    top: 70px;
     left: 50%;
     transform: TRANSLATE(-50%, 0);
     background: rgba(0,0,0,0.7);
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-size: clamp(1.8em, 5vw, 2.8em);
+    padding: 8px 22px;
+    border-radius: 28px;
+    font-size: clamp(1.6em, 4.8vw, 2.6em);
     font-weight: BOLD;
     color: #FFFF00;
     z-index: 90;
-    box-shadow: 0 0 20px #FFFF00;
+    box-shadow: 0 0 18px #FFFF00;
 }
 
 #WARNING-MSG {
     position: FIXED;
-    bottom: 80px;
+    bottom: 70px;
     left: 50%;
     transform: TRANSLATE(-50%, 0);
     background: rgba(255,0,0,0.8);
-    padding: 15px 30px;
-    border-radius: 30px;
-    font-size: clamp(1.5em, 4.5vw, 2.2em);
+    padding: 12px 28px;
+    border-radius: 28px;
+    font-size: clamp(1.4em, 4.2vw, 2em);
     font-weight: BOLD;
     color: #FFFFFF;
     z-index: 90;
     text-align: CENTER;
-    box-shadow: 0 0 30px #FF0000;
+    box-shadow: 0 0 28px #FF0000;
     animation: BLINK 1s infinite;
 }
 
 #INVENTORY-BAR {
     position: FIXED;
-    top: 160px;
+    top: 150px;
     left: 50%;
     transform: TRANSLATE(-50%, 0);
     background: rgba(0,0,0,0.7);
-    padding: 10px;
-    border-radius: 30px;
+    padding: 8px;
+    border-radius: 28px;
     display: NONE;
     flex-wrap: WRAP;
     justify-content: CENTER;
-    gap: 10px;
+    gap: 8px;
     z-index: 90;
-    max-width: 90%;
+    max-width: 92%;
 }
 
 .INVENTORY-BTN {
-    padding: 8px 15px;
-    font-size: clamp(1em, 3vw, 1.4em);
+    padding: 6px 12px;
+    font-size: clamp(0.9em, 2.8vw, 1.3em);
     background: linear-gradient(#ff7e5f, #feb47b);
-    min-width: 120px;
+    min-width: 110px;
 }
 
 .BLINK {
@@ -230,35 +234,35 @@ H1 {
     left: 50%;
     transform: TRANSLATE(-50%, -50%);
     background: rgba(0,0,0,0.95);
-    padding: 20px;
-    border-radius: 30px;
-    width: 90%;
-    max-width: 700px;
-    max-height: 90vh;
+    padding: 18px;
+    border-radius: 28px;
+    width: 92%;
+    max-width: 650px;
+    max-height: 92vh;
     overflow-y: AUTO;
     z-index: 200;
     display: NONE;
-    box-shadow: 0 0 40px rgba(255,255,0,0.8);
+    box-shadow: 0 0 38px rgba(255,255,0,0.8);
 }
 
 .SHOP-ITEM {
     background: rgba(255,255,255,0.1);
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 20px;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 18px;
     text-align: CENTER;
 }
 
 FOOTER {
     text-align: CENTER;
-    padding: 15px;
+    padding: 12px;
     background: rgba(0,0,0,0.5);
     margin-top: AUTO;
 }
 
 FOOTER P {
-    margin: 8px 0;
-    font-size: clamp(0.9em, 3vw, 1.3em);
+    margin: 6px 0;
+    font-size: clamp(0.8em, 2.8vw, 1.2em);
 }
 
 #BUG-MODAL {
@@ -268,20 +272,20 @@ FOOTER P {
     transform: TRANSLATE(-50%, -50%);
     background: #fff;
     color: #333;
-    padding: 25px;
-    border-radius: 30px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    padding: 22px;
+    border-radius: 28px;
+    width: 92%;
+    max-width: 480px;
+    box-shadow: 0 0 38px rgba(0,0,0,0.8);
     display: NONE;
     z-index: 200;
 }
 
 #BUG-MODAL INPUT, #BUG-MODAL TEXTAREA {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 12px;
+    padding: 9px;
+    margin: 9px 0;
+    border-radius: 11px;
     border: 2px solid #ccc;
     font-size: 1em;
 }
