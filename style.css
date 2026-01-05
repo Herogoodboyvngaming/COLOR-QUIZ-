@@ -1,4 +1,4 @@
-/* style.css - TỐI ƯU CHO ĐIỆN THOẠI VÀ PC, ĐẸP LUNG LINH */
+/* style.css - ĐÃ CẬP NHẬT INVENTORY BAR + RESPONSIVE HOÀN HẢO */
 body {
     margin: 0;
     padding: 0;
@@ -22,7 +22,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     flex: 1;
-    padding: 15px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
@@ -30,27 +30,27 @@ H1 {
     font-family: 'Fredoka One', cursive;
     font-size: clamp(2.5em, 8vw, 5em);
     text-align: CENTER;
-    margin: 20px 0;
+    margin: 15px 0;
     text-shadow: 4px 4px 10px rgba(0,0,0,0.6);
     color: #FFFF00;
 }
 
 .SUBTITLE {
-    font-size: clamp(1.2em, 4vw, 1.6em);
+    font-size: clamp(1em, 4vw, 1.6em);
     text-align: CENTER;
-    margin: 15px auto;
+    margin: 10px auto;
     line-height: 1.5;
 }
 
 .HOME-MAIN {
     text-align: CENTER;
-    padding: 30px 10px;
+    padding: 20px 10px;
 }
 
 .BTN {
-    padding: clamp(12px, 4vw, 18px) clamp(30px, 8vw, 40px);
-    margin: 15px;
-    font-size: clamp(1.4em, 5vw, 1.8em);
+    padding: clamp(10px, 4vw, 18px) clamp(25px, 8vw, 40px);
+    margin: 10px;
+    font-size: clamp(1.3em, 5vw, 1.8em);
     background: linear-gradient(#667eea, #764ba2);
     color: #fff;
     border: NONE;
@@ -59,6 +59,8 @@ H1 {
     box-shadow: 0 6px 15px rgba(0,0,0,0.4);
     transition: all 0.3s;
     font-weight: BOLD;
+    width: 90%;
+    max-width: 400px;
 }
 
 .BTN:hover {
@@ -67,28 +69,29 @@ H1 {
 }
 
 .BTN.LARGE {
-    padding: clamp(20px, 6vw, 30px) clamp(40px, 10vw, 60px);
-    font-size: clamp(1.8em, 6vw, 2.5em);
+    padding: clamp(18px, 6vw, 30px) clamp(35px, 10vw, 60px);
+    font-size: clamp(1.6em, 6vw, 2.5em);
 }
 
 .GAME-HEADER {
     display: FLEX;
-    flex-wrap: WRAP;
-    justify-content: CENTER;
+    flex-direction: COLUMN;
     align-items: CENTER;
-    gap: 15px;
+    gap: 10px;
     padding: 10px;
 }
 
 .SHOP-BTN {
     background: linear-gradient(#ff7e5f, #feb47b);
+    width: 90%;
+    max-width: 400px;
 }
 
 #SCORE-BOARD {
     background: rgba(0,0,0,0.4);
-    padding: 20px;
+    padding: 15px;
     border-radius: 25px;
-    margin: 20px 0;
+    margin: 15px 0;
     font-size: clamp(1.8em, 5vw, 2.8em);
     font-weight: BOLD;
     text-align: CENTER;
@@ -97,22 +100,25 @@ H1 {
 
 #MAIN-VIEW {
     text-align: CENTER;
-    padding: 20px;
+    padding: 15px;
+    flex: 1;
+    overflow-y: AUTO;
 }
 
 .COLOR-GRID {
     display: GRID;
-    grid-template-columns: REPEAT(AUTO-FIT, MINMAX(120px, 1fr));
-    gap: 15px;
-    margin: 30px 0;
+    grid-template-columns: REPEAT(AUTO-FIT, MINMAX(110px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+    padding: 0 10px;
 }
 
 .COLOR-BTN {
     width: 100%;
-    height: clamp(100px, 25vw, 150px);
+    height: clamp(90px, 22vw, 140px);
     border-radius: 20px;
     border: 5px solid #fff;
-    font-size: clamp(1em, 3vw, 1.4em);
+    font-size: clamp(0.9em, 3vw, 1.3em);
     font-weight: BOLD;
     box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     transition: all 0.3s;
@@ -144,25 +150,25 @@ H1 {
     justify-content: CENTER;
     align-items: CENTER;
     z-index: 100;
-    font-size: clamp(2em, 6vw, 3em);
+    font-size: clamp(1.8em, 6vw, 3em);
 }
 
 #TIMER {
     font-size: clamp(4em, 15vw, 8em);
     font-weight: BOLD;
     color: #FF4444;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 #GUESS-TIMER {
     position: FIXED;
-    top: 100px;
+    top: 80px;
     left: 50%;
     transform: TRANSLATE(-50%, 0);
     background: rgba(0,0,0,0.7);
-    padding: 15px 30px;
+    padding: 10px 25px;
     border-radius: 30px;
-    font-size: clamp(2em, 6vw, 3em);
+    font-size: clamp(1.8em, 5vw, 2.8em);
     font-weight: BOLD;
     color: #FFFF00;
     z-index: 90;
@@ -171,19 +177,42 @@ H1 {
 
 #WARNING-MSG {
     position: FIXED;
-    bottom: 100px;
+    bottom: 80px;
     left: 50%;
     transform: TRANSLATE(-50%, 0);
     background: rgba(255,0,0,0.8);
-    padding: 20px 40px;
+    padding: 15px 30px;
     border-radius: 30px;
-    font-size: clamp(1.8em, 5vw, 2.5em);
+    font-size: clamp(1.5em, 4.5vw, 2.2em);
     font-weight: BOLD;
     color: #FFFFFF;
     z-index: 90;
     text-align: CENTER;
     box-shadow: 0 0 30px #FF0000;
     animation: BLINK 1s infinite;
+}
+
+#INVENTORY-BAR {
+    position: FIXED;
+    top: 160px;
+    left: 50%;
+    transform: TRANSLATE(-50%, 0);
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 30px;
+    display: NONE;
+    flex-wrap: WRAP;
+    justify-content: CENTER;
+    gap: 10px;
+    z-index: 90;
+    max-width: 90%;
+}
+
+.INVENTORY-BTN {
+    padding: 8px 15px;
+    font-size: clamp(1em, 3vw, 1.4em);
+    background: linear-gradient(#ff7e5f, #feb47b);
+    min-width: 120px;
 }
 
 .BLINK {
@@ -201,10 +230,10 @@ H1 {
     left: 50%;
     transform: TRANSLATE(-50%, -50%);
     background: rgba(0,0,0,0.95);
-    padding: 30px;
+    padding: 20px;
     border-radius: 30px;
     width: 90%;
-    max-width: 800px;
+    max-width: 700px;
     max-height: 90vh;
     overflow-y: AUTO;
     z-index: 200;
@@ -214,22 +243,22 @@ H1 {
 
 .SHOP-ITEM {
     background: rgba(255,255,255,0.1);
-    padding: 20px;
-    margin: 20px 0;
+    padding: 15px;
+    margin: 15px 0;
     border-radius: 20px;
     text-align: CENTER;
 }
 
 FOOTER {
     text-align: CENTER;
-    padding: 20px;
+    padding: 15px;
     background: rgba(0,0,0,0.5);
     margin-top: AUTO;
 }
 
 FOOTER P {
-    margin: 10px 0;
-    font-size: clamp(1em, 3vw, 1.4em);
+    margin: 8px 0;
+    font-size: clamp(0.9em, 3vw, 1.3em);
 }
 
 #BUG-MODAL {
@@ -239,7 +268,7 @@ FOOTER P {
     transform: TRANSLATE(-50%, -50%);
     background: #fff;
     color: #333;
-    padding: 30px;
+    padding: 25px;
     border-radius: 30px;
     width: 90%;
     max-width: 500px;
@@ -250,9 +279,9 @@ FOOTER P {
 
 #BUG-MODAL INPUT, #BUG-MODAL TEXTAREA {
     width: 100%;
-    padding: 12px;
-    margin: 12px 0;
+    padding: 10px;
+    margin: 10px 0;
     border-radius: 12px;
     border: 2px solid #ccc;
-    font-size: 1.1em;
+    font-size: 1em;
 }
