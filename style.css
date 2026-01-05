@@ -1,4 +1,4 @@
-/* style.css */
+/* style.css - giữ nguyên đẹp như cũ */
 body {
     margin: 0;
     padding: 0;
@@ -121,12 +121,6 @@ H1 {
 .COLOR-BTN:hover {
     transform: scale(1.1);
     box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-}
-
-.COLOR-BTN.SELECTED {
-    border: 10px solid #FFFF00;
-    transform: scale(1.15);
-    box-shadow: 0 0 40px #FFFF00;
 }
 
 #OVERLAY {
