@@ -1,0 +1,79 @@
+/* GIỮ NGUYÊN PHẦN LỚN TỪ TRƯỚC, THÊM MỚI */
+.black-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    color: white;
+    font-size: 2.5rem;
+    text-align: center;
+    transition: opacity 1s;
+}
+
+.black-screen p {
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.scoreboard {
+    background: rgba(255,255,255,0.9);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    font-size: 1.8rem;
+}
+
+.color-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.color-btn {
+    padding: 20px;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    transition: transform 0.2s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.color-btn:nth-child(1) { background: red; }
+.color-btn:nth-child(2) { background: blue; }
+.color-btn:nth-child(3) { background: green; }
+.color-btn:nth-child(4) { background: yellow; color: black; }
+.color-btn:nth-child(5) { background: black; }
+.color-btn:nth-child(6) { background: white; color: black; border: 2px solid #333; }
+.color-btn:nth-child(7) { background: purple; }
+.color-btn:nth-child(8) { background: orange; }
+.color-btn:nth-child(9) { background: pink; }
+.color-btn:nth-child(10) { background: brown; }
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.feedback {
+    font-size: 2rem;
+    font-weight: bold;
+    min-height: 60px;
+    margin: 20px 0;
+}
+
+/* CÁC CLASS KHÁC GIỮ NGUYÊN TỪ FILE TRƯỚC */
