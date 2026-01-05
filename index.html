@@ -36,24 +36,25 @@
             {name: 'CORAL', hex: '#FF7F50'},
         ];
 
-        // Âm thanh thật từ nguồn miễn phí
         const SOUNDS = {
             correct: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_4e79e3c6d3.mp3?filename=success-1-6297.mp3',
             wrong: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_8c8b6d1f3f.mp3?filename=wrong-answer-129254.mp3',
-            victory: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d7c5a3a3e.mp3?filename=fanfare-6302.mp3'
+            victory: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d7c5a3a3e.mp3?filename=fanfare-6302.mp3',
+            buy: 'https://cdn.pixabay.com/download/audio/2022/05/13/audio_8c3e3d3e4f.mp3?filename=cash-register-172293.mp3',
+            warning: 'https://cdn.pixabay.com/download/audio/2023/08/22/audio_9d8e3b3e4f.mp3?filename=alarm-clock-64535.mp3'
         };
 
         function playSound(type) {
-            const audio = new Audio(SOUNDS[type]);
-            audio.volume = 0.5;
+            const audio = new Audio(SOUNDS[type] || SOUNDS.correct);
+            audio.volume = 0.6;
             audio.play().catch(() => {});
         }
 
-        const STATE_KEY = 'colorGameBotV4';
+        const STATE_KEY = 'colorGamePersistentV4';
 
         function getState() {
             const s = localStorage.getItem(STATE_KEY);
-            return s ? JSON.parse(s) : null;
+            return s ? JSON.parse(s) : {playerScore: 0};
         }
 
         function setState(state) {
@@ -95,8 +96,15 @@
             parent.appendChild(footer);
         }
 
+        const shopItems = [
+            {id: 'reveal', name: 'MẮT NHÌN XUYÊN THẤU', desc: 'NHÌN THẤY MÀU ĐÚNG TRONG 10 GIÂY', price: 100000, duration: 300000},
+            {id: 'hint3', name: 'GỢI Ý 3 MÀU SAI', desc: 'LOẠI BỎ 3 MÀU SAI KHỎI BẢNG', price: 50000, duration: 300000},
+            {id: 'extraTime', name: 'THỜI GIAN THÊM', desc: '+3 PHÚT ĐẾM NGƯỢC', price: 40000, duration: 300000},
+            {id: 'halfWrong', name: 'GIẢM NỬA SAI', desc: 'GIẢM 1/2 SỐ LẦN SAI ĐÃ CÓ', price: 35000, duration: 300000},
+            {id: 'doublePoint', name: 'NHÂN ĐÔI ĐIỂM', desc: 'ĐOÁN ĐÚNG LẦN NÀY +20 ĐIỂM', price: 80000, duration: 300000},
+        ];
+
         if (!player) {
-            // TRANG CHỦ
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -116,8 +124,17 @@
             const main = document.createElement('DIV');
             main.classList.add('HOME-MAIN');
 
+            const currentScore = getState().playerScore || 0;
+            const scoreInfo = document.createElement('P');
+            scoreInfo.textContent = `ĐIỂM HIỆN TẠI CỦA BẠN: ${currentScore.toLocaleString()}`;
+            scoreInfo.style.fontWeight = 'BOLD';
+            scoreInfo.style.color = '#FFFF00';
+            scoreInfo.style.fontSize = '2.2EM';
+            scoreInfo.style.marginBottom = '30PX';
+            main.appendChild(scoreInfo);
+
             const info = document.createElement('P');
-            info.textContent = 'PLAYER 1 LÀ BOT - BẠN LÀ NGƯỜI ĐOÁN MÀU!';
+            info.textContent = 'PLAYER 1 LÀ BOT - BẠN LÀ NGƯỜI ĐOÁN MÀU! THỜI GIAN NGẪU NHIÊN 1-10 PHÚT!';
             info.style.fontWeight = 'BOLD';
             info.style.color = '#FFFF00';
             info.style.fontSize = '2EM';
@@ -166,7 +183,6 @@
 
             document.body.appendChild(modal);
         } else if (player === 2) {
-            // PLAYER 2 - NGƯỜI CHƠI
             document.body.innerHTML = '';
             const container = document.createElement('DIV');
             container.id = 'CONTAINER';
@@ -178,6 +194,12 @@
             title.textContent = 'TRÒ CHƠI ĐỐ MÀU - BẠN VS BOT';
             header.appendChild(title);
 
+            const shopBtn = createButton('CỬA HÀNG SKILL', () => {
+                showShop();
+            });
+            shopBtn.classList.add('SHOP-BTN');
+            header.appendChild(shopBtn);
+
             const backBtn = createButton('TRỞ VỀ TRANG CHỦ', () => {
                 if (confirm('THOÁT KHỎI TRÒ CHƠI?')) {
                     location.href = location.pathname;
@@ -186,9 +208,11 @@
             header.appendChild(backBtn);
 
             const resetBtn = createButton('RESET ĐIỂM', () => {
-                if (confirm('RESET ĐIỂM CỦA BẠN VỀ 0?')) {
-                    localStorage.removeItem(STATE_KEY);
+                if (confirm('RESET ĐIỂM CỦA BẠN VỀ 0? (KHÔNG THỂ HOÀN TÁC)')) {
+                    const newState = {playerScore: 0};
+                    setState(newState);
                     updateView();
+                    alert('ĐIỂM ĐÃ ĐƯỢC RESET VỀ 0!');
                 }
             });
             header.appendChild(resetBtn);
@@ -197,11 +221,8 @@
 
             const scoreBoard = document.createElement('DIV');
             scoreBoard.id = 'SCORE-BOARD';
-            const botScore = document.createElement('DIV');
-            botScore.id = 'BOT-SCORE';
             const playerScore = document.createElement('DIV');
             playerScore.id = 'PLAYER-SCORE';
-            scoreBoard.appendChild(botScore);
             scoreBoard.appendChild(playerScore);
             container.appendChild(scoreBoard);
 
@@ -220,32 +241,137 @@
             overlay.appendChild(timerDiv);
             document.body.appendChild(overlay);
 
+            const guessTimer = document.createElement('DIV');
+            guessTimer.id = 'GUESS-TIMER';
+            guessTimer.style.display = 'NONE';
+            document.body.appendChild(guessTimer);
+
+            // ICON Ở ĐẦU VÀ CUỐI CHỮ
+            const warningMsg = document.createElement('DIV');
+            warningMsg.id = 'WARNING-MSG';
+            warningMsg.textContent = '🚨 NHANH LÊN THỜI GIAN SẮP HẾT, HẾT LÀ BẠN THUA ĐÓ! 🚨';
+            warningMsg.style.display = 'NONE';
+            document.body.appendChild(warningMsg);
+
+            const shopModal = document.createElement('DIV');
+            shopModal.id = 'SHOP-MODAL';
+            document.body.appendChild(shopModal);
+
             createFooter(container);
 
+            let hasWarned = false;
+
             function updateScores() {
-                const state = getState() || {botScore: 0, playerScore: 0};
-                document.getElementById('BOT-SCORE').textContent = `BOT: ${state.botScore} ĐIỂM`;
-                document.getElementById('PLAYER-SCORE').textContent = `BẠN: ${state.playerScore} ĐIỂM`;
+                const state = getState();
+                document.getElementById('PLAYER-SCORE').textContent = `ĐIỂM CỦA BẠN: ${state.playerScore.toLocaleString()}`;
             }
 
-            function createPalette() {
+            function showShop() {
+                const state = getState();
+                shopModal.innerHTML = '';
+                shopModal.style.display = 'BLOCK';
+
+                const title = document.createElement('H2');
+                title.textContent = 'CỬA HÀNG SKILL (THỜI HẠN 5 PHÚT)';
+                shopModal.appendChild(title);
+
+                const currentPoint = document.createElement('P');
+                currentPoint.textContent = `ĐIỂM HIỆN TẠI: ${state.playerScore.toLocaleString()}`;
+                currentPoint.style.fontSize = '1.8EM';
+                currentPoint.style.color = '#FFFF00';
+                shopModal.appendChild(currentPoint);
+
+                shopItems.forEach(item => {
+                    const card = document.createElement('DIV');
+                    card.classList.add('SHOP-ITEM');
+
+                    const name = document.createElement('H3');
+                    name.textContent = item.name;
+                    card.appendChild(name);
+
+                    const desc = document.createElement('P');
+                    desc.textContent = item.desc;
+                    card.appendChild(desc);
+
+                    const price = document.createElement('P');
+                    price.textContent = `GIÁ: ${item.price.toLocaleString()} ĐIỂM`;
+                    price.style.color = '#FF4444';
+                    price.style.fontWeight = 'BOLD';
+                    card.appendChild(price);
+
+                    const buyBtn = createButton('MUA NGAY', () => {
+                        if (state.playerScore < item.price) {
+                            alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ MUA ITEM NÀY!');
+                            return;
+                        }
+                        if (confirm(`MUA ${item.name} VỚI ${item.price.toLocaleString()} ĐIỂM?`)) {
+                            playSound('buy');
+                            const newState = {...state};
+                            newState.playerScore -= item.price;
+                            newState.activeSkill = {id: item.id, buyTime: Date.now(), duration: item.duration};
+                            setState(newState);
+                            alert('MUA THÀNH CÔNG! SKILL ĐÃ KÍCH HOẠT!');
+                            shopModal.style.display = 'NONE';
+                            updateView();
+                        }
+                    });
+                    if (state.playerScore < item.price) buyBtn.disabled = true;
+                    card.appendChild(buyBtn);
+
+                    shopModal.appendChild(card);
+                });
+
+                const closeBtn = createButton('ĐÓNG CỬA HÀNG', () => shopModal.style.display = 'NONE');
+                shopModal.appendChild(closeBtn);
+            }
+
+            function applySkill(state) {
+                if (!state.activeSkill) return false;
+                const elapsed = Date.now() - state.activeSkill.buyTime;
+                if (elapsed > state.activeSkill.duration) {
+                    delete state.activeSkill;
+                    setState(state);
+                    return false;
+                }
+                return true;
+            }
+
+            function createPalette(state) {
                 const grid = document.createElement('DIV');
                 grid.classList.add('COLOR-GRID');
-                colors.forEach(c => {
+
+                let availableColors = colors.slice();
+                if (state.activeSkill && state.activeSkill.id === 'hint3' && applySkill(state)) {
+                    let wrongColors = colors.filter(c => c.hex !== state.secretColor);
+                    wrongColors.sort(() => Math.random() - 0.5);
+                    const toRemove = wrongColors.slice(0, 3).map(c => c.hex);
+                    availableColors = colors.filter(c => !toRemove.includes(c.hex));
+                }
+
+                availableColors.forEach(c => {
                     const btn = document.createElement('BUTTON');
                     btn.classList.add('COLOR-BTN');
                     btn.style.backgroundColor = c.hex;
                     btn.style.color = getTextColor(c.hex);
                     btn.textContent = c.name;
+
+                    if (state.activeSkill && state.activeSkill.id === 'reveal' && applySkill(state)) {
+                        if (c.hex === state.secretColor) {
+                            btn.classList.add('REVEAL');
+                        }
+                    }
+
                     btn.onclick = () => {
-                        const state = getState();
                         if (c.hex === state.secretColor) {
                             playSound('correct');
                             playSound('victory');
+                            let bonus = 10;
+                            if (state.activeSkill && state.activeSkill.id === 'doublePoint' && applySkill(state)) bonus = 20;
                             const newState = {...state};
-                            newState.playerScore += 10;
+                            newState.playerScore += bonus;
+                            delete newState.activeSkill;
                             setState(newState);
-                            showResult(true);
+                            showResult(true, bonus);
                         } else {
                             playSound('wrong');
                             const currentScore = state.playerScore || 0;
@@ -269,15 +395,16 @@
                 return grid;
             }
 
-            function showResult(correct) {
+            function showResult(correct, bonus = 10) {
                 mainView.innerHTML = '';
                 const msg = document.createElement('H2');
-                msg.textContent = correct ? 'CHÚC MỪNG! BẠN ĐOÁN ĐÚNG RỒI +10 ĐIỂM 🎉🎉' : 'BẠN ĐÃ SAI QUÁ 3 LẦN HOẶC TỪ BỎ';
+                msg.textContent = correct ? `CHÚC MỪNG! +${bonus} ĐIỂM 🎉🎉` : 'HẾT GIỜ HOẶC SAI QUÁ 3 LẦN - BẠN THUA RỒI!';
                 msg.style.color = correct ? '#00FF00' : '#FF4444';
                 mainView.appendChild(msg);
 
                 const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
-                    localStorage.removeItem(STATE_KEY);
+                    const persistentState = {playerScore: getState().playerScore};
+                    setState(persistentState);
                     botSetColorAndWait();
                 });
                 nextBtn.classList.add('LARGE');
@@ -286,16 +413,22 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                const duration = Math.floor(Math.random() * 240000) + 60000;
-                setState({
+                let duration = Math.floor(Math.random() * 540000) + 60000;
+                const state = getState();
+                if (state.activeSkill && state.activeSkill.id === 'extraTime' && applySkill(state)) {
+                    duration += 180000;
+                    delete state.activeSkill;
+                    setState(state);
+                }
+                const newState = {
                     secretColor: secret,
                     state: 'WAITING',
                     timerStart: Date.now(),
                     timerDuration: duration,
-                    botScore: (getState()?.botScore || 0),
-                    playerScore: (getState()?.playerScore || 0),
+                    playerScore: state.playerScore,
                     wrongGuesses: 0
-                });
+                };
+                setState(newState);
                 updateView();
             }
 
@@ -304,28 +437,36 @@
                 const state = getState();
                 mainView.innerHTML = '';
                 overlay.style.display = 'NONE';
+                guessTimer.style.display = 'NONE';
+                warningMsg.style.display = 'NONE';
+                hasWarned = false;
 
-                if (!state || state.state === 'GUESSING' || (state.wrongGuesses >= 3)) {
-                    if (state && state.wrongGuesses >= 3) {
+                applySkill(state);
+
+                if (state.state === 'WAITING') {
+                    overlay.style.display = 'FLEX';
+                } else if (state.state === 'GUESSING' || state.wrongGuesses >= 3) {
+                    if (state.wrongGuesses >= 3) {
                         showResult(false);
                         return;
                     }
+                    guessTimer.style.display = 'BLOCK';
+
                     const ready = document.createElement('H2');
                     ready.textContent = 'BẠN ĐÃ SẴN SÀNG ĐOÁN MÀU CHƯA?';
                     mainView.appendChild(ready);
                     const h = document.createElement('H2');
                     h.textContent = 'ĐOÁN ĐI NÀO!!!';
                     mainView.appendChild(h);
-                    mainView.appendChild(createPalette());
+                    mainView.appendChild(createPalette(state));
 
                     const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
-                        const currentScore = (getState()?.playerScore || 0);
-                        if (currentScore < 10) {
+                        if ((state.playerScore || 0) < 10) {
                             alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ TỪ BỎ');
                             return;
                         }
-                        if (confirm('BẠN CHẮC CHẮN MUỐN TỪ BỎ? -10 ĐIỂM NHÉ')) {
-                            const newState = {...getState()};
+                        if (confirm('TỪ BỎ THẬT À? -10 ĐIỂM')) {
+                            const newState = {...state};
                             newState.playerScore -= 10;
                             setState(newState);
                             showResult(false);
@@ -333,19 +474,20 @@
                     });
                     surrender.style.background = '#FF4444';
                     mainView.appendChild(surrender);
-                } else {
-                    overlay.style.display = 'FLEX';
                 }
             }
 
             setInterval(() => {
                 const state = getState();
-                if (state && state.state === 'WAITING') {
+                if (!state) return;
+
+                if (state.state === 'WAITING') {
                     const elapsed = Date.now() - state.timerStart;
                     const remaining = state.timerDuration - elapsed;
                     if (remaining <= 0) {
                         const newState = {...state};
                         newState.state = 'GUESSING';
+                        newState.guessTimerStart = Date.now();
                         setState(newState);
                         updateView();
                     } else {
@@ -353,16 +495,36 @@
                         const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
                         document.getElementById('TIMER').textContent = m + ':' + s;
                     }
+                } else if (state.state === 'GUESSING') {
+                    const elapsed = Date.now() - state.guessTimerStart;
+                    const remaining = Math.max(0, state.timerDuration - elapsed);
+                    const totalSeconds = Math.floor(remaining / 1000);
+
+                    const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                    const s = String(totalSeconds % 60).padStart(2, '0');
+                    document.getElementById('GUESS-TIMER').textContent = `THỜI GIAN CÒN LẠI: \( {m}: \){s}`;
+
+                    if (totalSeconds <= 10 && totalSeconds > 5 && !hasWarned) {
+                        warningMsg.style.display = 'BLOCK';
+                        playSound('warning');
+                        hasWarned = true;
+                    } else if (totalSeconds <= 5) {
+                        warningMsg.style.color = '#FF0000';
+                        warningMsg.style.animation = 'BLINK 0.4s infinite';
+                    }
+
+                    if (remaining <= 0) {
+                        showResult(false);
+                    }
                 }
             }, 500);
 
-            if (!getState()) {
+            const state = getState();
+            if (!state.secretColor) {
                 botSetColorAndWait();
             } else {
                 updateView();
             }
-        } else {
-            alert('CHỈ CÓ PLAYER 2 THÔI NHÉ - PLAYER 1 LÀ BOT!');
         }
     </script>
 </body>
