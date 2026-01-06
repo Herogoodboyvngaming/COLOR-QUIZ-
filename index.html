@@ -91,7 +91,7 @@
                 FOOTER.appendChild(P);
             });
             const REPORT_BTN = CREATE_BUTTON('BÁO CÁO LỖI', () => {
-                document.getElementById('BUG-MODAL').style.display = 'BLOCK';
+                document.getElementById('BUG-MODAL').style.display = 'block';
             });
             FOOTER.appendChild(REPORT_BTN);
             PARENT.appendChild(FOOTER);
@@ -142,9 +142,7 @@
             MAIN.appendChild(INFO);
 
             const START_BTN = CREATE_BUTTON('BẮT ĐẦU CHƠI VỚI BOT', () => {
-                if (confirm('BẠN SẴN SÀNG CHƠI VỚI BOT CHƯA?')) {
-                    location.href = location.pathname + '?player=2';
-                }
+                location.href = location.pathname + '?player=2';
             });
             START_BTN.classList.add('LARGE');
             MAIN.appendChild(START_BTN);
@@ -171,7 +169,7 @@
             const SEND = CREATE_BUTTON('GỬI BÁO CÁO', () => {
                 if (FIELDS.every(F => F.value.trim())) {
                     alert('CẢM ƠN BẠN ĐÃ BÁO CÁO! MÌNH SẼ SỬA NGAY NHA 😊');
-                    MODAL.style.display = 'NONE';
+                    MODAL.style.display = 'none';
                     FIELDS.forEach(F => F.value = '');
                 } else {
                     alert('BẠN BẮT BUỘC PHẢI NHẬP ĐẦY ĐỦ MỚI GỬI ĐƯỢC NHA');
@@ -179,7 +177,7 @@
             });
             MODAL.appendChild(SEND);
 
-            const CLOSE = CREATE_BUTTON('ĐÓNG', () => MODAL.style.display = 'NONE');
+            const CLOSE = CREATE_BUTTON('ĐÓNG', () => MODAL.style.display = 'none');
             MODAL.appendChild(CLOSE);
 
             document.body.appendChild(MODAL);
@@ -195,7 +193,9 @@
             TITLE.textContent = 'TRÒ CHƠI ĐỐ MÀU - BẠN VS BOT';
             HEADER.appendChild(TITLE);
 
-            const SHOP_BTN = CREATE_BUTTON('CỬA HÀNG SKILL', SHOW_SHOP);
+            const SHOP_BTN = CREATE_BUTTON('CỬA HÀNG SKILL', () => {
+                SHOW_SHOP();
+            });
             SHOP_BTN.classList.add('SHOP-BTN');
             HEADER.appendChild(SHOP_BTN);
 
@@ -217,7 +217,7 @@
             HEADER.appendChild(RESET_BTN);
 
             const INFO_BTN = CREATE_BUTTON('ℹ️ THÔNG TIN & UPDATE', () => {
-                document.getElementById('INFO-MODAL').style.display = 'BLOCK';
+                document.getElementById('INFO-MODAL').style.display = 'block';
             });
             HEADER.appendChild(INFO_BTN);
 
@@ -248,13 +248,13 @@
             const WARNING_MSG = document.createElement('DIV');
             WARNING_MSG.id = 'WARNING-MSG';
             WARNING_MSG.textContent = '🚨 NHANH LÊN THỜI GIAN SẮP HẾT, HẾT LÀ BẠN THUA ĐÓ! 🚨';
-            WARNING_MSG.style.display = 'NONE';
+            WARNING_MSG.style.display = 'none';
             document.body.appendChild(WARNING_MSG);
 
             const TIME_UP_MSG = document.createElement('DIV');
             TIME_UP_MSG.id = 'TIME-UP-MSG';
             TIME_UP_MSG.textContent = 'THỜI GIAN HẾT!';
-            TIME_UP_MSG.style.display = 'NONE';
+            TIME_UP_MSG.style.display = 'none';
             document.body.appendChild(TIME_UP_MSG);
 
             const SHOP_MODAL = document.createElement('DIV');
@@ -263,29 +263,30 @@
 
             const INVENTORY_BAR = document.createElement('DIV');
             INVENTORY_BAR.id = 'INVENTORY-BAR';
-            INVENTORY_BAR.style.display = 'NONE';
+            INVENTORY_BAR.style.display = 'none';
             document.body.appendChild(INVENTORY_BAR);
 
             const INFO_MODAL = document.createElement('DIV');
             INFO_MODAL.id = 'INFO-MODAL';
-            INFO_MODAL.style.display = 'NONE';
+            INFO_MODAL.style.display = 'none';
             const INFO_TITLE = document.createElement('H2');
             INFO_TITLE.textContent = 'ℹ️ THÔNG TIN & UPDATE';
             INFO_MODAL.appendChild(INFO_TITLE);
 
             const INFO_CONTENT = document.createElement('P');
             INFO_CONTENT.innerHTML = `
-                <strong>CẬP NHẬT MỚI NHẤT (06/01/2026):</strong><br><br>
+                <strong>CẬP NHẬT MỚI NHẤT:</strong><br><br>
                 • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
                 • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
-                • Nút "BẮT ĐẦU CHƠI VỚI BOT" và "CHƠI LẠI VỚI BOT" có <strong>xác nhận</strong> tránh bấm nhầm.<br>
+                • Nút "CHƠI LẠI VỚI BOT" có xác nhận tránh bấm nhầm.<br>
+                • Bấm "BẮT ĐẦU CHƠI VỚI BOT" ở trang chủ là vào chơi luôn (không xác nhận).<br>
                 • Không còn timer đếm ngược khi đoán, chỉ hiện cảnh báo khi sắp hết giờ.<br>
                 • Giao diện tối ưu cho mọi thiết bị (PC, Android, iOS).<br><br>
                 CHƠI VUI VẺ NHÉ! 🎉
             `;
             INFO_MODAL.appendChild(INFO_CONTENT);
 
-            const CLOSE_INFO = CREATE_BUTTON('ĐÓNG', () => INFO_MODAL.style.display = 'NONE');
+            const CLOSE_INFO = CREATE_BUTTON('ĐÓNG', () => INFO_MODAL.style.display = 'none');
             INFO_MODAL.appendChild(CLOSE_INFO);
 
             document.body.appendChild(INFO_MODAL);
@@ -303,7 +304,7 @@
             function SHOW_SHOP() {
                 const STATE = GET_STATE();
                 SHOP_MODAL.innerHTML = '';
-                SHOP_MODAL.style.display = 'BLOCK';
+                SHOP_MODAL.style.display = 'block';
 
                 const TITLE = document.createElement('H2');
                 TITLE.textContent = 'CỬA HÀNG SKILL';
@@ -346,7 +347,7 @@
                             NEW_STATE.INVENTORY.push(ITEM.ID);
                             SET_STATE(NEW_STATE);
                             alert('MUA THÀNH CÔNG! SKILL ĐÃ VÀO TÚI ĐỒ!');
-                            SHOP_MODAL.style.display = 'NONE';
+                            SHOP_MODAL.style.display = 'none';
                             UPDATE_VIEW();
                         }
                     });
@@ -355,14 +356,14 @@
                     SHOP_MODAL.appendChild(CARD);
                 });
 
-                const CLOSE_BTN = CREATE_BUTTON('ĐÓNG CỬA HÀNG', () => SHOP_MODAL.style.display = 'NONE');
+                const CLOSE_BTN = CREATE_BUTTON('ĐÓNG CỬA HÀNG', () => SHOP_MODAL.style.display = 'none');
                 SHOP_MODAL.appendChild(CLOSE_BTN);
             }
 
             function SHOW_INVENTORY() {
                 const STATE = GET_STATE();
                 INVENTORY_BAR.innerHTML = '';
-                INVENTORY_BAR.style.display = 'FLEX';
+                INVENTORY_BAR.style.display = 'flex';
 
                 const TITLE = document.createElement('P');
                 TITLE.textContent = 'TÚI ĐỒ SKILL:';
@@ -491,10 +492,10 @@
                 UPDATE_SCORES();
                 const STATE = GET_STATE();
                 MAIN_VIEW.innerHTML = '';
-                OVERLAY.style.display = 'NONE';
-                WARNING_MSG.style.display = 'NONE';
-                TIME_UP_MSG.style.display = 'NONE';
-                INVENTORY_BAR.style.display = 'NONE';
+                OVERLAY.style.display = 'none';
+                WARNING_MSG.style.display = 'none';
+                TIME_UP_MSG.style.display = 'none';
+                INVENTORY_BAR.style.display = 'none';
                 HAS_WARNED = false;
 
                 if (STATE.INVENTORY && STATE.INVENTORY.length > 0 && STATE.STATE === 'GUESSING') {
