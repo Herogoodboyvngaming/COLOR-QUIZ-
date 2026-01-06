@@ -135,16 +135,14 @@
             main.appendChild(scoreInfo);
 
             const info = document.createElement('P');
-            info.textContent = 'PLAYER 1 LÀ BOT - BẠN LÀ NGƯỜI ĐOÁN MÀU! THỜI GIAN NGẪU NHIÊN 1-10 PHÚT!';
+            info.textContent = 'PLAYER 1 LÀ BOT - BẠN LÀ NGƯỜI ĐOÁN MÀU!';
             info.style.fontWeight = 'BOLD';
             info.style.color = '#FFFF00';
             info.style.fontSize = '2EM';
             main.appendChild(info);
 
             const startBtn = createButton('BẮT ĐẦU CHƠI VỚI BOT', () => {
-                if (confirm('BẠN SẴN SÀNG CHƠI CHƯA?')) {
-                    location.href = location.pathname + '?player=2';
-                }
+                location.href = location.pathname + '?player=2';
             });
             startBtn.classList.add('LARGE');
             main.appendChild(startBtn);
@@ -218,6 +216,11 @@
             });
             header.appendChild(resetBtn);
 
+            const infoBtn = createButton('ℹ️ THÔNG TIN & UPDATE', () => {
+                document.getElementById('INFO-MODAL').style.display = 'BLOCK';
+            });
+            header.appendChild(infoBtn);
+
             container.appendChild(header);
 
             const scoreBoard = document.createElement('DIV');
@@ -275,7 +278,7 @@
                 <strong>CẬP NHẬT MỚI NHẤT:</strong><br><br>
                 • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
                 • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
-                • Nút "CHƠI LẠI VỚI BOT" giờ có <strong>xác nhận</strong> để tránh bấm nhầm.<br>
+                • Nút "CHƠI LẠI VỚI BOT" có xác nhận tránh bấm nhầm.<br>
                 • Không còn timer đếm ngược khi đoán, chỉ hiện cảnh báo khi sắp hết giờ.<br>
                 • Giao diện tối ưu cho mọi thiết bị (PC, Android, iOS).<br><br>
                 CHƠI VUI VẺ NHÉ! 🎉
@@ -459,8 +462,6 @@
 
                 const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
                     if (confirm('BẠN MUỐN CHƠI LẠI VỚI BOT THẬT CHỨ? (ĐIỂM VÀ TÚI ĐỒ GIỮ NGUYÊN)')) {
-                        const persistentState = {playerScore: getState().playerScore, inventory: getState().inventory || []};
-                        setState(persistentState);
                         botSetColorAndWait();
                     }
                 });
@@ -470,7 +471,7 @@
 
             function botSetColorAndWait() {
                 const secret = colors[Math.floor(Math.random() * colors.length)].hex;
-                const waitDuration = 30000; // CỐ ĐỊNH 30 GIÂY
+                const waitDuration = 30000;
                 const state = getState();
                 const newState = {
                     secretColor: secret,
@@ -482,7 +483,7 @@
                     wrongGuesses: 0
                 };
                 setState(newState);
-                hintUsed = false; // RESET GỢI Ý MỖI LƯỢT
+                hintUsed = false;
                 updateView();
             }
 
@@ -517,7 +518,6 @@
                     h.textContent = 'ĐOÁN ĐI NÀO!!!';
                     mainView.appendChild(h);
 
-                    // NÚT GỢI Ý MIỄN PHÍ 1 LẦN/LƯỢT
                     if (!hintUsed) {
                         const hintBtn = createButton('GỢI Ý (LOẠI 3 MÀU SAI)', () => {
                             if (hintUsed) {
@@ -550,12 +550,6 @@
                     mainView.appendChild(surrender);
                 }
             }
-
-            // NÚT THÔNG TIN & UPDATE TRONG HEADER
-            const infoBtn = createButton('ℹ️ THÔNG TIN & UPDATE', () => {
-                document.getElementById('INFO-MODAL').style.display = 'BLOCK';
-            });
-            header.appendChild(infoBtn);
 
             setInterval(() => {
                 const state = getState();
@@ -601,12 +595,8 @@
                 }
             }, 500);
 
-            const state = getState();
-            if (!state.secretColor) {
-                botSetColorAndWait();
-            } else {
-                updateView();
-            }
+            // BẮT ĐẦU LƯỢT MỚI NGAY KHI VÀO TRANG CHƠI
+            botSetColorAndWait();
         }
     </script>
 </body>
