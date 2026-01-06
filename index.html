@@ -290,7 +290,7 @@
                 <strong>CẬP NHẬT MỚI NHẤT:</strong><br><br>
                 • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
                 • Đoán đúng +<strong>100 ĐIỂM</strong> (nhân đôi thành 200 nếu dùng skill).<br>
-                • Đoán sai / Từ bỏ -<strong>50 ĐIỂM</strong>.<br>
+                • Đoán sai / Từ bỏ -<strong>50 ĐIỂM</strong> (chỉ trừ khi còn điểm, không âm).<br>
                 • Khi chọn màu sẽ có popup "ĐANG KIỂM TRA MÀU" trong 3 giây.<br>
                 • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
                 • Nút "CHƠI LẠI VỚI BOT" có xác nhận tránh bấm nhầm.<br>
@@ -453,13 +453,18 @@
                                 showResult(true, bonus);
                             } else {
                                 playSound('wrong');
-                                const currentScore = state.playerScore || 0;
                                 const penalty = 50;
                                 const newState = {...state};
-                                newState.playerScore = Math.max(0, currentScore - penalty);
+                                if (state.playerScore > 0) {
+                                    newState.playerScore = Math.max(0, state.playerScore - penalty);
+                                    setState(newState);
+                                    alert(`SAI RỒI!!! -${penalty} ĐIỂM 😭`);
+                                } else {
+                                    setState(newState);
+                                    alert('SAI RỒI!!! BẠN KHÔNG CÓ ĐIỂM NÊN KHÔNG BỊ TRỪ 😅');
+                                }
                                 newState.wrongGuesses += 1;
                                 setState(newState);
-                                alert(`SAI RỒI!!! -${penalty} ĐIỂM 😭`);
                                 updateView();
                             }
                         }, 3000);
@@ -550,13 +555,14 @@
                     mainView.appendChild(createPalette(state));
 
                     const surrender = createButton('TỪ BỎ (-50 ĐIỂM)', () => {
-                        if ((state.playerScore || 0) < 50) {
-                            alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ TỪ BỎ');
+                        if (state.playerScore <= 0) {
+                            alert('BẠN KHÔNG CÓ ĐIỂM NÊN KHÔNG BỊ TRỪ KHI TỪ BỎ 😅');
+                            showResult(false);
                             return;
                         }
                         if (confirm('TỪ BỎ THẬT À? -50 ĐIỂM')) {
                             const newState = {...state};
-                            newState.playerScore -= 50;
+                            newState.playerScore = Math.max(0, state.playerScore - 50);
                             setState(newState);
                             showResult(false);
                         }
@@ -611,7 +617,6 @@
                 }
             }, 500);
 
-            // BẮT ĐẦU LƯỢT MỚI NGAY KHI VÀO TRANG CHƠI
             botSetColorAndWait();
         }
     </script>
