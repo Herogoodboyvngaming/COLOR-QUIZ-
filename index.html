@@ -47,8 +47,8 @@
 
         function PLAY_SOUND(TYPE) {
             const AUDIO = new Audio(SOUNDS[TYPE] || SOUNDS.CORRECT);
-            AUDIO.VOLUME = 0.6;
-            AUDIO.PLAY().CATCH(() => {});
+            AUDIO.volume = 0.6;
+            AUDIO.play().catch(() => {});
         }
 
         const STATE_KEY = 'COLORGAME2026';
@@ -195,9 +195,7 @@
             TITLE.textContent = 'TRÒ CHƠI ĐỐ MÀU - BẠN VS BOT';
             HEADER.appendChild(TITLE);
 
-            const SHOP_BTN = CREATE_BUTTON('CỬA HÀNG SKILL', () => {
-                SHOW_SHOP();
-            });
+            const SHOP_BTN = CREATE_BUTTON('CỬA HÀNG SKILL', SHOW_SHOP);
             SHOP_BTN.classList.add('SHOP-BTN');
             HEADER.appendChild(SHOP_BTN);
 
@@ -499,14 +497,12 @@
                 INVENTORY_BAR.style.display = 'NONE';
                 HAS_WARNED = false;
 
-                APPLY_SKILL(STATE);
-
                 if (STATE.INVENTORY && STATE.INVENTORY.length > 0 && STATE.STATE === 'GUESSING') {
                     SHOW_INVENTORY();
                 }
 
                 if (STATE.STATE === 'WAITING') {
-                    OVERLAY.style.display = 'FLEX';
+                    OVERLAY.style.display = 'flex';
                 } else if (STATE.STATE === 'GUESSING' || STATE.WRONG_GUESSES >= 3) {
                     if (STATE.WRONG_GUESSES >= 3) {
                         SHOW_RESULT(false);
@@ -555,7 +551,7 @@
 
             setInterval(() => {
                 const STATE = GET_STATE();
-                if (!STATE) return;
+                if (!STATE || !STATE.STATE) return;
 
                 if (STATE.STATE === 'WAITING') {
                     const ELAPSED = Date.now() - STATE.TIMER_START;
@@ -571,7 +567,8 @@
                     } else {
                         const M = String(Math.floor(REMAINING / 60000)).padStart(2, '0');
                         const S = String(Math.floor((REMAINING % 60000) / 1000)).padStart(2, '0');
-                        document.getElementById('WAIT-TIMER').textContent = M + ':' + S;
+                        const TIMER_EL = document.getElementById('WAIT-TIMER');
+                        if (TIMER_EL) TIMER_EL.textContent = M + ':' + S;
                     }
                 } else if (STATE.STATE === 'GUESSING') {
                     const ELAPSED = Date.now() - STATE.GUESS_TIMER_START;
@@ -579,7 +576,7 @@
                     const TOTAL_SECONDS = Math.floor(REMAINING / 1000);
 
                     if (TOTAL_SECONDS <= 10 && TOTAL_SECONDS > 5 && !HAS_WARNED) {
-                        WARNING_MSG.style.display = 'BLOCK';
+                        WARNING_MSG.style.display = 'block';
                         PLAY_SOUND('WARNING');
                         HAS_WARNED = true;
                     } else if (TOTAL_SECONDS <= 5) {
@@ -588,7 +585,7 @@
                     }
 
                     if (REMAINING <= 0) {
-                        TIME_UP_MSG.style.display = 'BLOCK';
+                        TIME_UP_MSG.style.display = 'block';
                         PLAY_SOUND('WRONG');
                         setTimeout(() => {
                             SHOW_RESULT(false);
@@ -597,7 +594,6 @@
                 }
             }, 500);
 
-            // FIX LỖI: BẤM "BẮT ĐẦU" HOẶC "CHƠI LẠI" → VÀO THẲNG MÀN HÌNH ĐẶT MÀU, KHÔNG HIỆN HEADER + MAIN_VIEW TRỐNG
             BOT_SET_COLOR_AND_WAIT();
         }
     </script>
