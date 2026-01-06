@@ -13,7 +13,7 @@
         const playerParam = params.get('player');
         let player = playerParam ? Number(playerParam) : null;
 
-        const colors = [
+        const COLORS = [
             {name: 'ĐỎ', hex: '#FF0000'},
             {name: 'CAM', hex: '#FFA500'},
             {name: 'VÀNG', hex: '#FFFF00'},
@@ -91,7 +91,7 @@
                 footer.appendChild(p);
             });
             const reportBtn = createButton('BÁO CÁO LỖI', () => {
-                document.getElementById('BUG-MODAL').style.display = 'BLOCK';
+                document.getElementById('BUG-MODAL').style.display = 'block';
             });
             footer.appendChild(reportBtn);
             parent.appendChild(footer);
@@ -169,7 +169,7 @@
             const send = createButton('GỬI BÁO CÁO', () => {
                 if (fields.every(f => f.value.trim())) {
                     alert('CẢM ƠN BẠN ĐÃ BÁO CÁO! MÌNH SẼ SỬA NGAY NHA 😊');
-                    modal.style.display = 'NONE';
+                    modal.style.display = 'none';
                     fields.forEach(f => f.value = '');
                 } else {
                     alert('BẠN BẮT BUỘC PHẢI NHẬP ĐẦY ĐỦ MỚI GỬI ĐƯỢC NHA');
@@ -177,7 +177,7 @@
             });
             modal.appendChild(send);
 
-            const close = createButton('ĐÓNG', () => modal.style.display = 'NONE');
+            const close = createButton('ĐÓNG', () => modal.style.display = 'none');
             modal.appendChild(close);
 
             document.body.appendChild(modal);
@@ -217,7 +217,7 @@
             header.appendChild(resetBtn);
 
             const infoBtn = createButton('ℹ️ THÔNG TIN & UPDATE', () => {
-                document.getElementById('INFO-MODAL').style.display = 'BLOCK';
+                document.getElementById('INFO-MODAL').style.display = 'block';
             });
             header.appendChild(infoBtn);
 
@@ -248,13 +248,13 @@
             const warningMsg = document.createElement('DIV');
             warningMsg.id = 'WARNING-MSG';
             warningMsg.textContent = '🚨 NHANH LÊN THỜI GIAN SẮP HẾT, HẾT LÀ BẠN THUA ĐÓ! 🚨';
-            warningMsg.style.display = 'NONE';
+            warningMsg.style.display = 'none';
             document.body.appendChild(warningMsg);
 
             const timeUpMsg = document.createElement('DIV');
             timeUpMsg.id = 'TIME-UP-MSG';
             timeUpMsg.textContent = 'THỜI GIAN HẾT!';
-            timeUpMsg.style.display = 'NONE';
+            timeUpMsg.style.display = 'none';
             document.body.appendChild(timeUpMsg);
 
             const shopModal = document.createElement('DIV');
@@ -263,12 +263,12 @@
 
             const inventoryBar = document.createElement('DIV');
             inventoryBar.id = 'INVENTORY-BAR';
-            inventoryBar.style.display = 'NONE';
+            inventoryBar.style.display = 'none';
             document.body.appendChild(inventoryBar);
 
             const infoModal = document.createElement('DIV');
             infoModal.id = 'INFO-MODAL';
-            infoModal.style.display = 'NONE';
+            infoModal.style.display = 'none';
             const infoTitle = document.createElement('H2');
             infoTitle.textContent = 'ℹ️ THÔNG TIN & UPDATE';
             infoModal.appendChild(infoTitle);
@@ -279,13 +279,14 @@
                 • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
                 • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
                 • Nút "CHƠI LẠI VỚI BOT" có xác nhận tránh bấm nhầm.<br>
+                • Bấm "BẮT ĐẦU CHƠI VỚI BOT" ở trang chủ là vào chơi luôn (không xác nhận).<br>
                 • Không còn timer đếm ngược khi đoán, chỉ hiện cảnh báo khi sắp hết giờ.<br>
                 • Giao diện tối ưu cho mọi thiết bị (PC, Android, iOS).<br><br>
                 CHƠI VUI VẺ NHÉ! 🎉
             `;
             infoModal.appendChild(infoContent);
 
-            const closeInfo = createButton('ĐÓNG', () => infoModal.style.display = 'NONE');
+            const closeInfo = createButton('ĐÓNG', () => infoModal.style.display = 'none');
             infoModal.appendChild(closeInfo);
 
             document.body.appendChild(infoModal);
@@ -303,7 +304,7 @@
             function showShop() {
                 const state = getState();
                 shopModal.innerHTML = '';
-                shopModal.style.display = 'BLOCK';
+                shopModal.style.display = 'block';
 
                 const title = document.createElement('H2');
                 title.textContent = 'CỬA HÀNG SKILL';
@@ -346,7 +347,7 @@
                             newState.inventory.push(item.id);
                             setState(newState);
                             alert('MUA THÀNH CÔNG! SKILL ĐÃ VÀO TÚI ĐỒ!');
-                            shopModal.style.display = 'NONE';
+                            shopModal.style.display = 'none';
                             updateView();
                         }
                     });
@@ -355,14 +356,14 @@
                     shopModal.appendChild(card);
                 });
 
-                const closeBtn = createButton('ĐÓNG CỬA HÀNG', () => shopModal.style.display = 'NONE');
+                const closeBtn = createButton('ĐÓNG CỬA HÀNG', () => shopModal.style.display = 'none');
                 shopModal.appendChild(closeBtn);
             }
 
             function showInventory() {
                 const state = getState();
                 inventoryBar.innerHTML = '';
-                inventoryBar.style.display = 'FLEX';
+                inventoryBar.style.display = 'flex';
 
                 const title = document.createElement('P');
                 title.textContent = 'TÚI ĐỒ SKILL:';
@@ -398,12 +399,12 @@
                 const wrapper = document.createElement('DIV');
                 wrapper.classList.add('COLOR-WRAPPER');
 
-                let availableColors = colors.slice();
+                let availableColors = COLORS.slice();
                 if (state.activeSkill && state.activeSkill.id === 'hint3' && applySkill(state)) {
-                    let wrongColors = colors.filter(c => c.hex !== state.secretColor);
+                    let wrongColors = COLORS.filter(c => c.hex !== state.secretColor);
                     wrongColors.sort(() => Math.random() - 0.5);
                     const toRemove = wrongColors.slice(0, 3).map(c => c.hex);
-                    availableColors = colors.filter(c => !toRemove.includes(c.hex));
+                    availableColors = COLORS.filter(c => !toRemove.includes(c.hex));
                 }
 
                 availableColors.forEach(c => {
@@ -470,7 +471,7 @@
             }
 
             function botSetColorAndWait() {
-                const secret = colors[Math.floor(Math.random() * colors.length)].hex;
+                const secret = COLORS[Math.floor(Math.random() * COLORS.length)].hex;
                 const waitDuration = 30000;
                 const state = getState();
                 const newState = {
@@ -491,20 +492,18 @@
                 updateScores();
                 const state = getState();
                 mainView.innerHTML = '';
-                overlay.style.display = 'NONE';
-                warningMsg.style.display = 'NONE';
-                timeUpMsg.style.display = 'NONE';
-                inventoryBar.style.display = 'NONE';
+                overlay.style.display = 'none';
+                warningMsg.style.display = 'none';
+                timeUpMsg.style.display = 'none';
+                inventoryBar.style.display = 'none';
                 hasWarned = false;
-
-                applySkill(state);
 
                 if (state.inventory && state.inventory.length > 0 && state.state === 'GUESSING') {
                     showInventory();
                 }
 
                 if (state.state === 'WAITING') {
-                    overlay.style.display = 'FLEX';
+                    overlay.style.display = 'flex';
                 } else if (state.state === 'GUESSING' || state.wrongGuesses >= 3) {
                     if (state.wrongGuesses >= 3) {
                         showResult(false);
@@ -553,7 +552,7 @@
 
             setInterval(() => {
                 const state = getState();
-                if (!state) return;
+                if (!state || !state.state) return;
 
                 if (state.state === 'WAITING') {
                     const elapsed = Date.now() - state.timerStart;
@@ -569,7 +568,8 @@
                     } else {
                         const m = String(Math.floor(remaining / 60000)).padStart(2, '0');
                         const s = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
-                        document.getElementById('WAIT-TIMER').textContent = m + ':' + s;
+                        const timerEl = document.getElementById('WAIT-TIMER');
+                        if (timerEl) timerEl.textContent = m + ':' + s;
                     }
                 } else if (state.state === 'GUESSING') {
                     const elapsed = Date.now() - state.guessTimerStart;
@@ -577,7 +577,7 @@
                     const totalSeconds = Math.floor(remaining / 1000);
 
                     if (totalSeconds <= 10 && totalSeconds > 5 && !hasWarned) {
-                        warningMsg.style.display = 'BLOCK';
+                        warningMsg.style.display = 'block';
                         playSound('warning');
                         hasWarned = true;
                     } else if (totalSeconds <= 5) {
@@ -586,7 +586,7 @@
                     }
 
                     if (remaining <= 0) {
-                        timeUpMsg.style.display = 'BLOCK';
+                        timeUpMsg.style.display = 'block';
                         playSound('wrong');
                         setTimeout(() => {
                             showResult(false);
@@ -595,7 +595,6 @@
                 }
             }, 500);
 
-            // BẮT ĐẦU LƯỢT MỚI NGAY KHI VÀO TRANG CHƠI
             botSetColorAndWait();
         }
     </script>
