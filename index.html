@@ -263,9 +263,34 @@
             inventoryBar.style.display = 'NONE';
             document.body.appendChild(inventoryBar);
 
+            const infoModal = document.createElement('DIV');
+            infoModal.id = 'INFO-MODAL';
+            infoModal.style.display = 'NONE';
+            const infoTitle = document.createElement('H2');
+            infoTitle.textContent = 'ℹ️ THÔNG TIN & UPDATE';
+            infoModal.appendChild(infoTitle);
+
+            const infoContent = document.createElement('P');
+            infoContent.innerHTML = `
+                <strong>CẬP NHẬT MỚI NHẤT:</strong><br><br>
+                • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
+                • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
+                • Nút "CHƠI LẠI VỚI BOT" giờ có <strong>xác nhận</strong> để tránh bấm nhầm.<br>
+                • Không còn timer đếm ngược khi đoán, chỉ hiện cảnh báo khi sắp hết giờ.<br>
+                • Giao diện tối ưu cho mọi thiết bị (PC, Android, iOS).<br><br>
+                CHƠI VUI VẺ NHÉ! 🎉
+            `;
+            infoModal.appendChild(infoContent);
+
+            const closeInfo = createButton('ĐÓNG', () => infoModal.style.display = 'NONE');
+            infoModal.appendChild(closeInfo);
+
+            document.body.appendChild(infoModal);
+
             createFooter(container);
 
             let hasWarned = false;
+            let hintUsed = false;
 
             function updateScores() {
                 const state = getState();
@@ -433,9 +458,11 @@
                 mainView.appendChild(msg);
 
                 const nextBtn = createButton('CHƠI LẠI VỚI BOT', () => {
-                    const persistentState = {playerScore: getState().playerScore, inventory: getState().inventory || []};
-                    setState(persistentState);
-                    botSetColorAndWait();
+                    if (confirm('BẠN MUỐN CHƠI LẠI VỚI BOT THẬT CHỨ? (ĐIỂM VÀ TÚI ĐỒ GIỮ NGUYÊN)')) {
+                        const persistentState = {playerScore: getState().playerScore, inventory: getState().inventory || []};
+                        setState(persistentState);
+                        botSetColorAndWait();
+                    }
                 });
                 nextBtn.classList.add('LARGE');
                 mainView.appendChild(nextBtn);
@@ -455,6 +482,7 @@
                     wrongGuesses: 0
                 };
                 setState(newState);
+                hintUsed = false; // RESET GỢI Ý MỖI LƯỢT
                 updateView();
             }
 
@@ -488,6 +516,22 @@
                     const h = document.createElement('H2');
                     h.textContent = 'ĐOÁN ĐI NÀO!!!';
                     mainView.appendChild(h);
+
+                    // NÚT GỢI Ý MIỄN PHÍ 1 LẦN/LƯỢT
+                    if (!hintUsed) {
+                        const hintBtn = createButton('GỢI Ý (LOẠI 3 MÀU SAI)', () => {
+                            if (hintUsed) {
+                                alert('BẠN ĐÃ DÙNG GỢI Ý RỒI!');
+                                return;
+                            }
+                            hintUsed = true;
+                            updateView();
+                            alert('ĐÃ LOẠI BỎ 3 MÀU SAI! CHỌN LẠI ĐI!');
+                        });
+                        hintBtn.style.background = 'linear-gradient(#FFD700, #FFA500)';
+                        mainView.appendChild(hintBtn);
+                    }
+
                     mainView.appendChild(createPalette(state));
 
                     const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
@@ -506,6 +550,12 @@
                     mainView.appendChild(surrender);
                 }
             }
+
+            // NÚT THÔNG TIN & UPDATE TRONG HEADER
+            const infoBtn = createButton('ℹ️ THÔNG TIN & UPDATE', () => {
+                document.getElementById('INFO-MODAL').style.display = 'BLOCK';
+            });
+            header.appendChild(infoBtn);
 
             setInterval(() => {
                 const state = getState();
