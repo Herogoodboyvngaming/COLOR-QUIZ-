@@ -102,7 +102,7 @@
             {id: 'hint3', name: 'GỢI Ý 3 MÀU SAI', desc: 'LOẠI BỎ 3 MÀU SAI KHỎI BẢNG', price: 50000},
             {id: 'extraTime', name: 'THỜI GIAN THÊM', desc: '+3 PHÚT ĐẾM NGƯỢC', price: 40000},
             {id: 'halfWrong', name: 'GIẢM NỬA SAI', desc: 'GIẢM 1/2 SỐ LẦN SAI ĐÃ CÓ', price: 35000},
-            {id: 'doublePoint', name: 'NHÂN ĐÔI ĐIỂM', desc: 'ĐOÁN ĐÚNG LẦN NÀY +20 ĐIỂM', price: 80000},
+            {id: 'doublePoint', name: 'NHÂN ĐÔI ĐIỂM', desc: 'ĐOÁN ĐÚNG LẦN NÀY +200 ĐIỂM', price: 80000},
         ];
 
         if (!player) {
@@ -257,6 +257,18 @@
             timeUpMsg.style.display = 'none';
             document.body.appendChild(timeUpMsg);
 
+            const checkOverlay = document.createElement('DIV');
+            checkOverlay.id = 'CHECK-OVERLAY';
+            checkOverlay.style.display = 'none';
+            const checkText = document.createElement('DIV');
+            checkText.textContent = '⏰ ĐANG KIỂM TRA MÀU VUI LÒNG ĐỢI ⏰';
+            checkText.style.fontSize = 'clamp(2em, 6vw, 3.5em)';
+            checkText.style.fontWeight = 'bold';
+            checkText.style.color = '#FFD700';
+            checkText.style.textShadow = '0 0 20px #000';
+            checkOverlay.appendChild(checkText);
+            document.body.appendChild(checkOverlay);
+
             const shopModal = document.createElement('DIV');
             shopModal.id = 'SHOP-MODAL';
             document.body.appendChild(shopModal);
@@ -277,6 +289,9 @@
             infoContent.innerHTML = `
                 <strong>CẬP NHẬT MỚI NHẤT:</strong><br><br>
                 • Bot đặt màu bí mật chỉ trong <strong>30 GIÂY</strong> (cố định).<br>
+                • Đoán đúng +<strong>100 ĐIỂM</strong> (nhân đôi thành 200 nếu dùng skill).<br>
+                • Đoán sai / Từ bỏ -<strong>50 ĐIỂM</strong>.<br>
+                • Khi chọn màu sẽ có popup "ĐANG KIỂM TRA MÀU" trong 3 giây.<br>
                 • <strong>THÊM GỢI Ý</strong>: Bấm nút "GỢI Ý" để loại bỏ 3 màu sai (miễn phí 1 lần/lượt).<br>
                 • Nút "CHƠI LẠI VỚI BOT" có xác nhận tránh bấm nhầm.<br>
                 • Bấm "BẮT ĐẦU CHƠI VỚI BOT" ở trang chủ là vào chơi luôn (không xác nhận).<br>
@@ -421,40 +436,42 @@
                     }
 
                     btn.onclick = () => {
-                        if (c.hex === state.secretColor) {
-                            playSound('correct');
-                            playSound('victory');
-                            let bonus = 10;
-                            if (state.activeSkill && state.activeSkill.id === 'doublePoint' && applySkill(state)) bonus = 20;
-                            const newState = {...state};
-                            newState.playerScore += bonus;
-                            delete newState.activeSkill;
-                            setState(newState);
-                            showResult(true, bonus);
-                        } else {
-                            playSound('wrong');
-                            const currentScore = state.playerScore || 0;
-                            if (currentScore > 0) {
+                        document.getElementById('CHECK-OVERLAY').style.display = 'flex';
+
+                        setTimeout(() => {
+                            document.getElementById('CHECK-OVERLAY').style.display = 'none';
+
+                            if (c.hex === state.secretColor) {
+                                playSound('correct');
+                                playSound('victory');
+                                let bonus = 100;
+                                if (state.activeSkill && state.activeSkill.id === 'doublePoint' && applySkill(state)) bonus = 200;
                                 const newState = {...state};
-                                newState.playerScore -= 10;
-                                newState.wrongGuesses += 1;
+                                newState.playerScore += bonus;
+                                delete newState.activeSkill;
                                 setState(newState);
-                                alert('SAI RỒI!!! -10 ĐIỂM 😭');
+                                showResult(true, bonus);
                             } else {
+                                playSound('wrong');
+                                const currentScore = state.playerScore || 0;
+                                const penalty = 50;
                                 const newState = {...state};
+                                if (currentScore > 0) {
+                                    newState.playerScore = Math.max(0, currentScore - penalty);
+                                }
                                 newState.wrongGuesses += 1;
                                 setState(newState);
-                                alert('SAI RỒI!!! BẠN KHÔNG CÓ ĐIỂM NÊN KHÔNG BỊ TRỪ 😅');
+                                alert(`SAI RỒI!!! -${penalty} ĐIỂM 😭`);
+                                updateView();
                             }
-                            updateView();
-                        }
+                        }, 3000);
                     };
                     wrapper.appendChild(btn);
                 });
                 return wrapper;
             }
 
-            function showResult(correct, bonus = 10) {
+            function showResult(correct, bonus = 100) {
                 mainView.innerHTML = '';
                 const msg = document.createElement('H2');
                 msg.textContent = correct ? `CHÚC MỪNG! +${bonus} ĐIỂM 🎉🎉` : 'HẾT GIỜ HOẶC SAI QUÁ 3 LẦN - BẠN THUA RỒI!';
@@ -496,6 +513,7 @@
                 warningMsg.style.display = 'none';
                 timeUpMsg.style.display = 'none';
                 inventoryBar.style.display = 'none';
+                document.getElementById('CHECK-OVERLAY').style.display = 'none';
                 hasWarned = false;
 
                 if (state.inventory && state.inventory.length > 0 && state.state === 'GUESSING') {
@@ -533,14 +551,14 @@
 
                     mainView.appendChild(createPalette(state));
 
-                    const surrender = createButton('TỪ BỎ (-10 ĐIỂM)', () => {
-                        if ((state.playerScore || 0) < 10) {
+                    const surrender = createButton('TỪ BỎ (-50 ĐIỂM)', () => {
+                        if ((state.playerScore || 0) < 50) {
                             alert('BẠN KHÔNG ĐỦ ĐIỂM ĐỂ TỪ BỎ');
                             return;
                         }
-                        if (confirm('TỪ BỎ THẬT À? -10 ĐIỂM')) {
+                        if (confirm('TỪ BỎ THẬT À? -50 ĐIỂM')) {
                             const newState = {...state};
-                            newState.playerScore -= 10;
+                            newState.playerScore -= 50;
                             setState(newState);
                             showResult(false);
                         }
